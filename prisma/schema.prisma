@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  SUPERADMIN
+  ADMIN
+  MARKETING
+}
+
+model User {
+  id              String   @id @default(uuid())
+  full_name       String
+  email           String         @unique
+  password_hash   String         @db.Text
+  username        String    
+  access_token    String?         @db.Text
+  role            UserRole       @default(MARKETING)
+  created_at      DateTime       @default(now())
+  updated_at      DateTime       @updatedAt
+
+  customers       Customer[]
+  transactions    Transaction[]
+
+  @@map("users")
+}
+
+model Customer {
+  id              String         @id @default(uuid())
+  nasabah_id      String
+  no_alternatif   String?
+  type_customer   String
+  created_by_user_id String
+  created_at      DateTime       @default(now())
+  account_balance Decimal
+  address         String?
+  full_name       String
+  
+  createdBy       User          @relation(fields: [created_by_user_id], references: [id])
+  transactions    Transaction[]
+
+  @@map("customers")
+}
+
+model Transaction {
+  id              String         @id @default(uuid())
+  nasabah_id      String
+  userId          String
+  transaction_type String
+  amount          Decimal
+  description     String
+  createdAt       DateTime       @default(now())
+  
+  customer        Customer      @relation(fields: [nasabah_id], references: [id])
+  user            User          @relation(fields: [userId], references: [id])
+
+  @@map("transactions")
+}
