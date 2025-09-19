@@ -5,9 +5,46 @@
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Swal from "sweetalert2";
+import DashboardLayout from "../components/DashboardLayout";
+import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("/api/auth/users");
+
+        if (response.ok) {
+          // Menggunakan response.ok untuk memeriksa status 200
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          // Redirect jika tidak terautentikasi atau terjadi kesalahan
+          router.push("/auth");
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+        router.push("/auth");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [router]);
+
+  if (loading) {
+    return <div>Memuat data pengguna...</div>;
+  }
+
+  if (!user) {
+    // Tampilkan pesan error atau redirect jika user tidak ada
+    return <div>Silakan login untuk mengakses halaman ini.</div>;
+  }
 
   const handleLogout = async () => {
     try {
@@ -36,34 +73,21 @@ export default function DashboardPage() {
   };
 
   return (
-    <div
-      style={{
-        fontFamily: "sans-serif",
-        padding: "2rem",
-        backgroundColor: "#f0f2f5",
-        minHeight: "100vh",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "800px",
-          margin: "0 auto",
-          backgroundColor: "#fff",
-          padding: "2rem",
-          borderRadius: "8px",
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        <h1 style={{ color: "#333" }}>Selamat Datang di Dashboard Marketing</h1>
-        <p style={{ color: "#666" }}>
-          Anda telah berhasil login. Di sini Anda bisa mulai mengelola data
-          transaksi.
-        </p>
-
-        <div style={{ marginTop: "2rem" }}>
-          <h2 style={{ color: "#444" }}>Form Input Transaksi Harian</h2>
-          <p>Fitur input transaksi akan diletakkan di sini.</p>
-        </div>
+    <div>
+      <div>
+        <DashboardLayout>
+          <h1 className="text-4xl font-bold mb-4 text-white">
+            Selamat Datang di Dashboard
+          </h1>
+          <p className="text-lg text-white">
+            Ini adalah konten utama halaman dashboard Anda.
+          </p>
+          <h1 className="text-lg text-white mt-10">
+            Selamat datang, {user.email}!
+          </h1>
+          <p className="text-lg text-white">ID Pengguna: {user.id}</p>
+          <p className="text-lg text-white">Peran: {user.role}</p>
+        </DashboardLayout>
 
         <button
           onClick={handleLogout}

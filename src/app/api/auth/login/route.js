@@ -37,7 +37,7 @@ export async function POST(req) {
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       process.env.JWT_ACCESS_KEY, // Gunakan kunci rahasia dari variabel lingkungan
-      { expiresIn: "1h" }
+      { expiresIn: "20d" }
     );
 
     // 5. Buat respons dan atur cookie di server

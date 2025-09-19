@@ -1,35 +1,51 @@
-// middleware.js
-
+// middleware.js yang sudah diperbaiki
 import { NextResponse } from "next/server";
+import { jwtVerify } from "jose";
 
-// Rute yang hanya bisa diakses oleh pengguna yang sudah login
-const protectedRoutes = ["/", "/dashboard"];
-// Rute yang harus dialihkan jika pengguna sudah login
+const protectedRoutes = ["/beranda", "/dashboard", "/"];
 const publicRoutes = ["/auth", "/auth/signup"];
 
-export function middleware(request) {
-  // Ambil cookie 'authToken' dari request
+export async function middleware(request) {
   const authToken = request.cookies.get("authToken")?.value;
   const currentPath = request.nextUrl.pathname;
 
-  // 1. Jika pengguna mencoba mengakses rute yang dilindungi dan tidak memiliki token,
-  //    redirect ke halaman login.
-  if (protectedRoutes.includes(currentPath) && !authToken) {
+  // 1. Verifikasi token dan dapatkan payload (data user)
+  let userPayload = null;
+  if (authToken) {
+    try {
+      const { payload } = await jwtVerify(
+        authToken,
+        new TextEncoder().encode(process.env.JWT_ACCESS_KEY)
+      );
+      userPayload = payload;
+    } catch (error) {
+      console.error("Token verification failed:", error);
+      // Token tidak valid, hapus cookie
+      const response = NextResponse.redirect(new URL("/auth", request.url));
+      response.cookies.set("authToken", "", { maxAge: 0 });
+      return response;
+    }
+  }
+
+  // 2. Jika pengguna mencoba rute yang dilindungi dan token tidak valid, redirect
+  if (protectedRoutes.includes(currentPath) && !userPayload) {
     return NextResponse.redirect(new URL("/auth", request.url));
   }
 
-  // 2. Jika pengguna sudah login dan mencoba mengakses halaman publik (login/signup),
-  //    redirect ke dashboard.
-  if (publicRoutes.includes(currentPath) && authToken) {
-    return NextResponse.redirect(new URL("/", request.url));
+  // 3. Jika pengguna sudah login (token valid) dan mencoba rute publik, redirect
+  if (publicRoutes.includes(currentPath) && userPayload) {
+    return NextResponse.redirect(new URL("/beranda", request.url));
   }
 
-  // Lanjutkan ke rute yang diminta
-  return NextResponse.next();
+  // Lanjutkan request. Jika token valid, tambahkan data pengguna ke header
+  // Ini adalah bagian TERPENTING untuk mengambil data di halaman dashboard
+  const response = NextResponse.next();
+  if (userPayload) {
+    response.headers.set("x-user-payload", JSON.stringify(userPayload));
+  }
+  return response;
 }
 
 export const config = {
-  // Tentukan rute yang akan diperiksa oleh middleware
-  // Pastikan matcher mencakup semua rute yang perlu dilindungi atau dialihkan
   matcher: ["/", "/dashboard", "/auth", "/auth/signup"],
 };

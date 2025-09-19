@@ -3,23 +3,23 @@ import Link from "next/link";
 import Form from "@/app/auth/_components/form";
 
 export const metadata = {
-  title: "Next.js SignIn Page | TailAdmin - Next.js Dashboard Template",
-  description: "This is Next.js Signin Page TailAdmin Dashboard Template",
+  title: "Restu Dewata App",
+  description: "This is internal App for an employee of PT BPR Restu Dewata",
+  icons: "/images/icons/logo-tab.png",
 };
 
-export default async function SignInPage() {
+export default async function loginPage() {
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="rounded-sm border border-stroke bg-white shadow-default">
         <div className="flex flex-wrap items-center">
           <div className="hidden w-full xl:block xl:w-1/2">
-            <div className="px-26 py-17.5 text-center">
-              <p className="2xl:px-20">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                suspendisseX.
+            <div className="px-2 py-1 text-center">
+              <p className="2xl:px-20 font-inter-black text-2xl">
+                Welcome to Restu Dewata App
               </p>
 
-              <span className="mt-15 inline-block">
+              <span className="mt-5 inline-block">
                 <svg
                   width="350"
                   height="350"
@@ -145,12 +145,7 @@ export default async function SignInPage() {
           </div>
 
           <div className="w-full border-stroke xl:w-1/2 xl:border-l-2">
-            <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-              <span className="mb-1.5 block font-medium">Start for free</span>
-              <h2 className="mb-9 text-2xl font-bold text-black sm:text-title-xl2">
-                Sign In to TailAdmin
-              </h2>
-
+            <div className="w-full p-4 sm:p-14 xl:p-16">
               <Form />
             </div>
           </div>

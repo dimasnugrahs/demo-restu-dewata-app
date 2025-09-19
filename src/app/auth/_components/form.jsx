@@ -6,6 +6,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Swal from "sweetalert2";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Form() {
   const router = useRouter();
@@ -54,8 +56,17 @@ export default function Form() {
     >
       <h2
         style={{ textAlign: "center", marginBottom: "1.5rem", color: "#333" }}
+        className="font-bold"
       >
-        Login
+        <Link className="inline-block" href="/">
+          <Image
+            className="mb-0"
+            src={"/images/icons/logo.png"}
+            alt="Logo"
+            width={170}
+            height={22}
+          />
+        </Link>
       </h2>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "1rem" }}>
@@ -64,7 +75,6 @@ export default function Form() {
             style={{
               display: "block",
               marginBottom: "0.5rem",
-              fontWeight: "bold",
             }}
           >
             Email atau Username
@@ -89,7 +99,6 @@ export default function Form() {
             style={{
               display: "block",
               marginBottom: "0.5rem",
-              fontWeight: "bold",
             }}
           >
             Password
@@ -97,7 +106,7 @@ export default function Form() {
           <input
             id="password"
             type="password"
-            value={form.password ?? ""} // Tambahkan nullish coalescing operator
+            value={form.password ?? ""}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             required
             style={{
@@ -114,12 +123,13 @@ export default function Form() {
           style={{
             width: "100%",
             padding: "0.75rem",
-            backgroundColor: isLoading ? "#6c757d" : "#007bff",
+            // backgroundColor: isLoading ? "#6c757d" : "#007bff",
             color: "white",
             border: "none",
             borderRadius: "5px",
             cursor: isLoading ? "not-allowed" : "pointer",
           }}
+          className="bg-company-500 hover:bg-company-700"
         >
           {isLoading ? "Memproses..." : "Login"}
         </button>
