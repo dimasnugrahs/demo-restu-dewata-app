@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata = {
   title: "Restu Dewata App",
@@ -9,7 +10,13 @@ export const metadata = {
 export default function Home() {
   return (
     <div>
-      <div>Hello</div>
+      <div>Welcome to Restu Dewata App</div>
+      <Link
+        href="/beranda"
+        className="text-blue-950 text-2xl p-2 bg-company-200 rounded-md"
+      >
+        Restu App
+      </Link>
     </div>
   );
 }

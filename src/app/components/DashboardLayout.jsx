@@ -17,8 +17,8 @@ const NavItem = ({ href, name, icon: Icon, pathname }) => {
         transition-colors duration-200
         ${
           isActive
-            ? "text-blue-600 dark:text-blue-400 font-semibold md:bg-blue-100 dark:md:bg-gray-700"
-            : "text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+            ? "text-company-50 font-semibold md:bg-company-800"
+            : "text-gray-500 hover:text-blue-600"
         }
       `}
     >
@@ -95,19 +95,19 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex flex-col md:flex-row min-h-screen bg-company-50">
       {/* Sidebar untuk Layar Lebar */}
-      <aside className="hidden md:flex flex-col bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 w-64 md:w-80 space-y-6 py-7 px-2">
-        <div className="flex items-center px-4">
+      <aside className="hidden md:flex flex-col bg-company-100 text-gray-700 dark:text-gray-300 w-64 md:w-80 space-y-6 py-7 px-2">
+        <div className="flex items-center px-2">
           <Link
             href="/"
-            className="text-2xl font-bold text-gray-900 dark:text-white"
+            className="text-blue-950 text-2xl p-2 bg-company-200 rounded-md"
           >
-            <span className="text-blue-600 dark:text-blue-400">Restu</span> App
+            Restu App
           </Link>
         </div>
 
-        <nav className="space-y-2">
+        <nav className="space-y-2 px-2">
           {navItems.map((item) => (
             <NavItem key={item.name} {...item} pathname={pathname} />
           ))}

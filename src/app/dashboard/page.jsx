@@ -9,42 +9,60 @@ import DashboardLayout from "../components/DashboardLayout";
 import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const [user, setUser] = useState(null);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUsers = async () => {
       try {
-        const response = await fetch("/api/auth/users");
+        const response = await fetch("/api/users");
 
         if (response.ok) {
-          // Menggunakan response.ok untuk memeriksa status 200
           const data = await response.json();
-          setUser(data.user);
+          setUsers(data.users);
         } else {
-          // Redirect jika tidak terautentikasi atau terjadi kesalahan
-          router.push("/auth");
+          // Tangani kasus ketika otentikasi gagal atau API error
+          const errorData = await response.json();
+          setError(errorData.message || "Gagal mengambil data pengguna.");
         }
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-        router.push("/auth");
+      } catch (err) {
+        console.error("Error fetching users:", err);
+        setError("Terjadi kesalahan jaringan.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserData();
-  }, [router]);
+    fetchUsers();
+  }, []);
 
-  if (loading) {
-    return <div>Memuat data pengguna...</div>;
-  }
+  const handleEdit = (userId) => {
+    // Arahkan ke halaman edit dengan ID pengguna
+    router.push(`/dashboard/users/edit/${userId}`);
+  };
 
-  if (!user) {
-    // Tampilkan pesan error atau redirect jika user tidak ada
-    return <div>Silakan login untuk mengakses halaman ini.</div>;
-  }
+  const handleDelete = async (userId) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) {
+      try {
+        const response = await fetch(`/api/users/${userId}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          // Perbarui state untuk menghilangkan pengguna yang sudah dihapus dari tabel
+          setUsers(users.filter((user) => user.id !== userId));
+        } else {
+          const errorData = await response.json();
+          setError(errorData.message || "Gagal menghapus pengguna.");
+        }
+      } catch (err) {
+        console.error("Error deleting user:", err);
+        setError("Terjadi kesalahan jaringan saat menghapus.");
+      }
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -76,17 +94,90 @@ export default function DashboardPage() {
     <div>
       <div>
         <DashboardLayout>
-          <h1 className="text-4xl font-bold mb-4 text-white">
+          <h1 className="text-4xl font-bold mb-4 text-company-950">
             Selamat Datang di Dashboard
           </h1>
-          <p className="text-lg text-white">
-            Ini adalah konten utama halaman dashboard Anda.
-          </p>
-          <h1 className="text-lg text-white mt-10">
-            Selamat datang, {user.email}!
+          <h1 className="text-lg text-company-950">
+            Menu untuk melihat semua pengguna!
           </h1>
-          <p className="text-lg text-white">ID Pengguna: {user.id}</p>
-          <p className="text-lg text-white">Peran: {user.role}</p>
+          <div className="p-4 bg-company-100 w-full rounded-md mt-5 overflow-x-auto">
+            {users.length === 0 ? (
+              <p>Rendering on users data.</p>
+            ) : (
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr className="bg-company-950 text-white font-display">
+                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>
+                      Nama Lengkap
+                    </th>
+                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>
+                      Email
+                    </th>
+                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>
+                      Username
+                    </th>
+                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>
+                      Role
+                    </th>
+                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>
+                      Aksi
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr
+                      key={user.id}
+                      style={{ borderBottom: "1px solid #ddd" }}
+                      className="bg-company-50"
+                    >
+                      <td style={{ padding: "8px", border: "1px solid #ddd" }}>
+                        {user.full_name}
+                      </td>
+                      <td style={{ padding: "8px", border: "1px solid #ddd" }}>
+                        {user.email}
+                      </td>
+                      <td style={{ padding: "8px", border: "1px solid #ddd" }}>
+                        {user.username}
+                      </td>
+                      <td style={{ padding: "8px", border: "1px solid #ddd" }}>
+                        {user.role}
+                      </td>
+                      <td
+                        style={{ padding: "8px", border: "1px solid #ddd" }}
+                        className="text-center"
+                      >
+                        <button
+                          onClick={() => handleEdit(user.id)}
+                          style={{
+                            padding: "5px 10px",
+                            color: "white",
+                            border: "none",
+                            cursor: "pointer",
+                          }}
+                          className="bg-green-500 hover:bg-green-700 rounded mx-1"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(user.id)}
+                          style={{
+                            padding: "5px 10px",
+                            color: "white",
+                            border: "none",
+                            cursor: "pointer",
+                          }}
+                          className="bg-red-500 hover:bg-red-800 rounded  mx-1"
+                        >
+                          Hapus
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </DashboardLayout>
 
         <button

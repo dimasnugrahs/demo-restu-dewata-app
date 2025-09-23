@@ -35,7 +35,13 @@ export async function POST(req) {
 
     // 4. Buat JSON Web Token (JWT)
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        full_name: user.full_name,
+        username: user.username,
+      },
       process.env.JWT_ACCESS_KEY, // Gunakan kunci rahasia dari variabel lingkungan
       { expiresIn: "20d" }
     );
@@ -44,7 +50,13 @@ export async function POST(req) {
     const response = NextResponse.json(
       {
         message: "Login berhasil",
-        user: { id: user.id, email: user.email, role: user.role },
+        user: {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          full_name: user.full_name,
+          username: user.username,
+        },
       },
       { status: 200 }
     );
