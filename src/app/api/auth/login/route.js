@@ -43,7 +43,7 @@ export async function POST(req) {
         username: user.username,
       },
       process.env.JWT_ACCESS_KEY, // Gunakan kunci rahasia dari variabel lingkungan
-      { expiresIn: "20d" }
+      { expiresIn: "1y" }
     );
 
     // 5. Buat respons dan atur cookie di server

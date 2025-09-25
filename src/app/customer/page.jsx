@@ -107,19 +107,34 @@ export default function CustomerPage() {
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr className="bg-company-950 text-white font-display">
-                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>
+                    <th
+                      className="font-normal"
+                      style={{ padding: "8px", border: "1px solid #ddd" }}
+                    >
                       Nama Lengkap
                     </th>
-                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>
+                    <th
+                      className="font-normal"
+                      style={{ padding: "8px", border: "1px solid #ddd" }}
+                    >
                       Email
                     </th>
-                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>
+                    <th
+                      className="font-normal"
+                      style={{ padding: "8px", border: "1px solid #ddd" }}
+                    >
                       Username
                     </th>
-                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>
+                    <th
+                      className="font-normal"
+                      style={{ padding: "8px", border: "1px solid #ddd" }}
+                    >
                       Role
                     </th>
-                    <th style={{ padding: "8px", border: "1px solid #ddd" }}>
+                    <th
+                      className="font-normal"
+                      style={{ padding: "8px", border: "1px solid #ddd" }}
+                    >
                       Aksi
                     </th>
                   </tr>
