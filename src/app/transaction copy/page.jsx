@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import DashboardLayout from "../components/DashboardLayout";
 import { useEffect, useState } from "react";
 
-export default function CustomerPage() {
+export default function TransactionPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

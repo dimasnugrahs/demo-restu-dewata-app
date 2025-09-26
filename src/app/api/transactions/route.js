@@ -1,0 +1,93 @@
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
+import { db } from "@/lib/db"; // Asumsi path ke client Prisma Anda
+
+export async function GET() {
+  try {
+    // Ambil semua data transaction dari database
+    const transactions = await db.transaction.findMany({
+      include: {
+        customer: true, // Sertakan data nasabah yang berelasi
+      },
+    });
+
+    return NextResponse.json({ transactions }, { status: 200 });
+  } catch (error) {
+    console.error("Kesalahan saat mengambil data customer:", error);
+    return NextResponse.json(
+      { message: "Kesalahan server internal." },
+      { status: 500 }
+    );
+  }
+}
+
+// Fungsi untuk mendapatkan userId dari token JWT di cookie
+const getUserIdFromToken = () => {
+  const cookieStore = cookies();
+  const token = cookieStore.get("authToken")?.value;
+
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_KEY);
+    return decoded.id;
+  } catch (error) {
+    console.error("JWT verification failed:", error.message);
+    return null;
+  }
+};
+
+export async function POST(req) {
+  try {
+    const userId = getUserIdFromToken();
+    if (!userId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { nasabah_id, transaction_type, amount, description } = body;
+
+    // Validasi data input
+    if (!nasabah_id || !transaction_type || !amount || !description) {
+      return NextResponse.json(
+        { message: "Semua field wajib diisi" },
+        { status: 400 }
+      );
+    }
+
+    if (isNaN(parseFloat(amount))) {
+      return NextResponse.json(
+        { message: "Amount harus berupa angka" },
+        { status: 400 }
+      );
+    }
+
+    // Simpan data transaksi ke database
+    const newTransaction = await db.transaction.create({
+      data: {
+        nasabah_id,
+        userId,
+        transaction_type,
+        amount: parseFloat(amount),
+        description,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        message: "Transaksi berhasil ditambahkan",
+        transaction: newTransaction,
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Failed to create transaction. Details:", error);
+    return NextResponse.json(
+      { message: "Terjadi kesalahan internal server" },
+      { status: 500 }
+    );
+  }
+}
