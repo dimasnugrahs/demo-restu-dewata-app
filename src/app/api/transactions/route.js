@@ -48,10 +48,10 @@ export async function POST(req) {
     }
 
     const body = await req.json();
-    const { nasabah_id, transaction_type, amount, description } = body;
+    const { identifier, transaction_type, amount, description } = body;
 
     // Validasi data input
-    if (!nasabah_id || !transaction_type || !amount || !description) {
+    if (!identifier || !transaction_type || !amount || !description) {
       return NextResponse.json(
         { message: "Semua field wajib diisi" },
         { status: 400 }
@@ -65,10 +65,35 @@ export async function POST(req) {
       );
     }
 
+    // --- Langkah 1: Cari Nasabah Berdasarkan Identifier ---
+    const nasabah = await db.customer.findFirst({
+      where: {
+        OR: [
+          { id: identifier }, // Cari berdasarkan ID Nasabah
+          { nasabah_id: identifier }, // Cari berdasarkan no rekening
+          { full_name: identifier }, // Cari berdasarkan Nama Lengkap
+          { no_alternatif: identifier }, // Cari berdasarkan Nomor Rekening Alternatif
+        ],
+      },
+      // Hanya ambil ID-nya saja (sesuaikan dengan field Anda)
+      select: {
+        id: true,
+      },
+    });
+
+    if (!nasabah) {
+      return NextResponse.json(
+        { message: "Nasabah tidak ditemukan dengan identifier tersebut." },
+        { status: 404 }
+      );
+    }
+
+    const nasabah_id = nasabah.id;
+
     // Simpan data transaksi ke database
     const newTransaction = await db.transaction.create({
       data: {
-        nasabah_id,
+        nasabah_id, // ID nasabah yang sudah diverifikasi
         userId,
         transaction_type,
         amount: parseFloat(amount),

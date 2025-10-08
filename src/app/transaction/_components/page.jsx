@@ -1,35 +1,102 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 
+// Utility function for debouncing (menghindari terlalu banyak panggilan API)
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(() => {
+      func.apply(null, args);
+    }, delay);
+  };
+};
+
 export default function TransactionForm() {
   const [formData, setFormData] = useState({
-    nasabah_id: "",
+    identifier: "", // Diubah dari nasabah_id menjadi identifier (sesuai API baru)
     transaction_type: "",
     amount: "",
     description: "",
   });
   const [loading, setLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState([]); // State untuk menampung saran
+  const [isSearching, setIsSearching] = useState(false); // State loading untuk saran
+  const formRef = useRef(null); // Ref untuk menutup suggestion saat klik di luar
+
+  // Fungsi pencarian nasabah yang di-debounce
+  const searchNasabah = useCallback(
+    debounce(async (query) => {
+      if (query.length < 3) {
+        setSuggestions([]);
+        setIsSearching(false);
+        return;
+      }
+
+      setIsSearching(true);
+      try {
+        const response = await axios.get(`/api/transactions/search?q=${query}`);
+        setSuggestions(response.data.customer);
+      } catch (error) {
+        console.error("Gagal mendapatkan saran:", error);
+        setSuggestions([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300), // Panggilan API ditunda 300ms
+    []
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
+
+    // Panggil pencarian hanya jika field 'identifier' yang berubah
+    if (name === "identifier") {
+      searchNasabah(value);
+    }
   };
+
+  const handleSelectSuggestion = (customer) => {
+    // Saat saran dipilih, kita mengisi input dengan ID nasabah yang sebenarnya.
+    // Ini penting agar API transaksi (yang mencari ID nasabah) mendapatkan ID yang valid
+    setFormData((prevData) => ({
+      ...prevData,
+      identifier: customer.id,
+    }));
+    setSuggestions([]); // Tutup daftar saran
+  };
+
+  // useEffect untuk menutup saran saat mengklik di luar form
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (formRef.current && !formRef.current.contains(event.target)) {
+        setSuggestions([]);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
+    // Kirim formData (yang berisi identifier)
     try {
-      // Panggil API transaksi
       const response = await axios.post("/api/transactions", formData);
 
-      // Tampilkan notifikasi sukses
       Swal.fire({
         icon: "success",
         title: "Sukses!",
@@ -40,7 +107,7 @@ export default function TransactionForm() {
 
       // Reset form setelah berhasil
       setFormData({
-        nasabah_id: "",
+        identifier: "",
         transaction_type: "",
         amount: "",
         description: "",
@@ -51,7 +118,6 @@ export default function TransactionForm() {
         error.response?.data?.message ||
         "Terjadi kesalahan. Silakan coba lagi.";
 
-      // Tampilkan notifikasi error
       Swal.fire({
         icon: "error",
         title: "Gagal!",
@@ -63,23 +129,60 @@ export default function TransactionForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
+    <form onSubmit={handleSubmit} className="space-y-4" ref={formRef}>
+      {/* Container diubah menjadi relative untuk menampung suggestions */}
+      <div className="relative">
         <label
-          htmlFor="nasabah_id"
+          htmlFor="identifier"
           className="block text-sm font-medium text-gray-700"
         >
-          ID Nasabah
+          ID/Nama/No. Rekening Nasabah
         </label>
         <input
           type="text"
-          id="nasabah_id"
-          name="nasabah_id"
-          value={formData.nasabah_id}
+          id="identifier"
+          name="identifier"
+          value={formData.identifier}
           onChange={handleChange}
           required
+          autoComplete="off"
+          placeholder="Masukkan ID, Nama Lengkap, atau Nomor Rekening"
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
+
+        {/* --- Daftar Suggestion --- */}
+        {(isSearching || suggestions.length > 0) && (
+          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+            {isSearching && formData.identifier.length >= 3 && (
+              <div className="p-2 text-center text-sm text-gray-500">
+                Mencari...
+              </div>
+            )}
+
+            {!isSearching &&
+              suggestions.length === 0 &&
+              formData.identifier.length >= 3 && (
+                <div className="p-2 text-center text-sm text-gray-500">
+                  Nasabah tidak ditemukan.
+                </div>
+              )}
+
+            {suggestions.map((nasabah) => (
+              <div
+                key={nasabah.id}
+                onClick={() => handleSelectSuggestion(nasabah)}
+                className="p-3 cursor-pointer hover:bg-indigo-50 border-b border-gray-100 last:border-b-0 transition-colors duration-150"
+              >
+                <p className="text-sm font-medium text-gray-900">
+                  {nasabah.full_name}
+                </p>
+                <p className="text-xs text-gray-500">
+                  ID: {nasabah.nasabah_id} | Rek: {nasabah.no_alternatif}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div>
@@ -98,8 +201,8 @@ export default function TransactionForm() {
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
           <option value="">Pilih...</option>
-          <option value="deposit">Deposit</option>
-          <option value="withdraw">Withdraw</option>
+          <option value="111">Kantor Pusat</option>
+          <option value="116">Kantor Cabang</option>
         </select>
       </div>
 
