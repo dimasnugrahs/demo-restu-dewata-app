@@ -61,6 +61,7 @@ model Transaction {
   transaction_type String
   amount          Decimal
   description     String
+  office_code     String?
   createdAt       DateTime       @default(now())
   
   customer        Customer      @relation(fields: [nasabah_id], references: [id])

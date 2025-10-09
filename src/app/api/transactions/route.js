@@ -48,10 +48,17 @@ export async function POST(req) {
     }
 
     const body = await req.json();
-    const { identifier, transaction_type, amount, description } = body;
+    const { identifier, transaction_type, amount, description, office_code } =
+      body;
 
     // Validasi data input
-    if (!identifier || !transaction_type || !amount || !description) {
+    if (
+      !identifier ||
+      !transaction_type ||
+      !amount ||
+      !description ||
+      !office_code
+    ) {
       return NextResponse.json(
         { message: "Semua field wajib diisi" },
         { status: 400 }
@@ -98,6 +105,7 @@ export async function POST(req) {
         transaction_type,
         amount: parseFloat(amount),
         description,
+        office_code,
       },
     });
 

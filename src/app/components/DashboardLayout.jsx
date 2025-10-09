@@ -132,7 +132,7 @@ export default function DashboardLayout({ children }) {
       <main className="flex-1 p-4 md:p-8 overflow-y-auto">{children}</main>
 
       {/* Navbar Bawah untuk Layar HP */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gray-800 border-t border-gray-700">
         <div className="flex justify-around items-center h-16">
           {navItems.map((item) => (
             <NavItem key={item.name} {...item} pathname={pathname} />

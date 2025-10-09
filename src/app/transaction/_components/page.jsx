@@ -200,9 +200,8 @@ export default function TransactionForm() {
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
-          <option value="">Pilih...</option>
-          <option value="111">Kantor Pusat</option>
-          <option value="116">Kantor Cabang</option>
+          <option value="">Silahkan pilih jenis transaksi...</option>
+          <option value="100">Setoran Tabungan</option>
         </select>
       </div>
 
@@ -231,6 +230,49 @@ export default function TransactionForm() {
         >
           Deskripsi
         </label>
+        <select
+          id="description"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          required
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+          <option value="">Silahkan pilih deskripsi setoran...</option>
+          <option value="Setoran Mobile Collector">
+            Setoran Mobile Collector
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label
+          htmlFor="office_code"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Kode Kantor
+        </label>
+        <select
+          id="office_code"
+          name="office_code"
+          value={formData.office_code}
+          onChange={handleChange}
+          required
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+          <option value="">Silahkan pilih kode kantor...</option>
+          <option value="111">Kantor Pusat</option>
+          <option value="116">Kantor Cabang Gianyar</option>
+        </select>
+      </div>
+
+      {/* <div>
+        <label
+          htmlFor="description"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Deskripsi
+        </label>
         <textarea
           id="description"
           name="description"
@@ -240,7 +282,7 @@ export default function TransactionForm() {
           rows="3"
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
-      </div>
+      </div> */}
 
       <button
         type="submit"
