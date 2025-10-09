@@ -13,6 +13,7 @@ export default function TransactionsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
+  const [user, setUser] = useState([]);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -35,8 +36,39 @@ export default function TransactionsPage() {
       }
     };
 
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("/api/auth/user");
+
+        if (response.ok) {
+          // Menggunakan response.ok untuk memeriksa status 200
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          // Redirect jika tidak terautentikasi atau terjadi kesalahan
+          router.push("/auth");
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+        router.push("/auth");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchTransactions();
-  }, []);
+    fetchUserData();
+  }, [router]);
+
+  if (!user) {
+    // Tampilkan pesan error atau redirect jika user tidak ada
+    return <div></div>;
+  }
+
+  const allowedRoles = ["ADMIN", "SUPERADMIN"];
+
+  // Fungsi sederhana untuk memeriksa izin
+  const isAllowed = allowedRoles.includes(user.role);
 
   const handleEdit = (transactionId) => {
     // Arahkan ke halaman edit dengan ID pengguna
@@ -93,10 +125,13 @@ export default function TransactionsPage() {
         <h1 className="text-lg text-company-950">
           Menu untuk melihat semua riwayat transaksi.
         </h1>
-        <div>
-          <ExportButton />
-          <DeleteAllTransactionsButton />
-        </div>
+        {isAllowed && (
+          <div>
+            <ExportButton />
+            <DeleteAllTransactionsButton />
+          </div>
+        )}
+
         <div className="p-4 bg-company-100 w-full rounded-md mt-5 overflow-x-auto">
           {transactions.length === 0 ? (
             <p>Tidak ada data transaksi.</p>
@@ -134,12 +169,14 @@ export default function TransactionsPage() {
                   >
                     Kode Kantor
                   </th>
-                  <th
-                    className="font-normal"
-                    style={{ padding: "8px", border: "1px solid #ddd" }}
-                  >
-                    Action
-                  </th>
+                  {isAllowed && (
+                    <th
+                      className="font-normal"
+                      style={{ padding: "8px", border: "1px solid #ddd" }}
+                    >
+                      Action
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -167,35 +204,37 @@ export default function TransactionsPage() {
                     <td style={{ padding: "8px", border: "1px solid #ddd" }}>
                       {transaction.office_code}
                     </td>
-                    <td
-                      style={{ padding: "8px", border: "1px solid #ddd" }}
-                      className="text-center"
-                    >
-                      <button
-                        onClick={() => handleEdit(transaction.id)}
-                        style={{
-                          padding: "5px 10px",
-                          color: "white",
-                          border: "none",
-                          cursor: "pointer",
-                        }}
-                        className="bg-green-500 hover:bg-green-700 rounded mx-1"
+                    {isAllowed && (
+                      <td
+                        style={{ padding: "8px", border: "1px solid #ddd" }}
+                        className="text-center"
                       >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(transaction.id)}
-                        style={{
-                          padding: "5px 10px",
-                          color: "white",
-                          border: "none",
-                          cursor: "pointer",
-                        }}
-                        className="bg-red-500 hover:bg-red-800 rounded  mx-1"
-                      >
-                        Hapus
-                      </button>
-                    </td>
+                        <button
+                          onClick={() => handleEdit(transaction.id)}
+                          style={{
+                            padding: "5px 10px",
+                            color: "white",
+                            border: "none",
+                            cursor: "pointer",
+                          }}
+                          className="bg-green-500 hover:bg-green-700 rounded mx-1"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(transaction.id)}
+                          style={{
+                            padding: "5px 10px",
+                            color: "white",
+                            border: "none",
+                            cursor: "pointer",
+                          }}
+                          className="bg-red-500 hover:bg-red-800 rounded  mx-1"
+                        >
+                          Hapus
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

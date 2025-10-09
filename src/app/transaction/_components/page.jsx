@@ -23,6 +23,7 @@ export default function TransactionForm() {
     transaction_type: "",
     amount: "",
     description: "",
+    office_code: "",
   });
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]); // State untuk menampung saran
@@ -111,6 +112,7 @@ export default function TransactionForm() {
         transaction_type: "",
         amount: "",
         description: "",
+        office_code: "",
       });
     } catch (error) {
       console.error("Gagal membuat transaksi:", error);
