@@ -48,22 +48,26 @@ export default function BerandaPage() {
       </h1>
 
       <div className="p-4 bg-company-100 w-full rounded-md mt-5">
-        <div className="grid grid-cols-3 gap-5 ">
-          <div className="p-4 bg-company-300 rounded text-sm text-company-950">
-            Total Balance
-            <div className="text-company-950 text-2xl">332.000</div>
+        <div className="grid grid-cols-2 gap-5 ">
+          <div className="p-4 bg-company-800 rounded text-sm text-company-50">
+            Balance
+            <div className="text-company-50 text-2xl">332.000</div>
           </div>
-          <div className="p-4 bg-company-300 rounded text-sm text-company-950">
+          <div className="p-4 bg-company-800 rounded text-sm text-company-50">
             Customers
-            <div className="text-company-950 text-2xl">32</div>
+            <div className="text-company-50 text-2xl">32</div>
           </div>
-          <div className="p-4 bg-company-300 rounded text-sm text-company-950">
+          <div className="p-4 bg-company-800 rounded text-sm text-company-50">
             Users
-            <div className="text-company-950 text-2xl">47</div>
+            <div className="text-company-50 text-2xl">47</div>
+          </div>
+          <div className="p-4 bg-company-800 rounded text-sm text-company-50">
+            None
+            <div className="text-company-50 text-2xl">0</div>
           </div>
         </div>
         <div className="grid grid-cols-1">
-          <div className="p-10 text-center bg-red-400 mt-5 rounded">Hello</div>
+          <div className="p-10 text-center bg-company-50 mt-5 rounded">Hello</div>
         </div>
       </div>
     </DashboardLayout>

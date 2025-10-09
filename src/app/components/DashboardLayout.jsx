@@ -111,40 +111,16 @@ const UserIcon = (props) => (
   </svg>
 );
 
-const allNavItems = [
+const navItems = [
   { name: "Home", href: "/beranda", icon: HomeIcon },
-  {
-    name: "Customers",
-    href: "/customer",
-    icon: UsersIcon,
-    roles: ["ADMIN", "SUPERADMIN", "STAFF"],
-  },
+  { name: "Customers", href: "/customer", icon: UsersIcon },
   { name: "Transactions", href: "/transactions", icon: TransactionsIcon },
   { name: "Transaction", href: "/transaction", icon: TransactionIcon },
-  {
-    name: "Marketing",
-    href: "/marketing",
-    icon: UserIcon,
-    roles: ["ADMIN", "SUPERADMIN"],
-  },
+  { name: "Marketing", href: "/marketing", icon: UserIcon },
 ];
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
-
-  const userRole = "MARKETING"; // Contoh: "MARKETING", "ADMIN", "SUPERADMIN"
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-  // Filter Navigasi berdasarkan Peran (Role)
-  const navItems = allNavItems.filter((item) => {
-    // 1. Jika item tidak memiliki properti 'roles', maka item tersebut ditampilkan untuk semua role (default).
-    if (!item.roles) {
-      return true;
-    }
-
-    // 2. Jika item memiliki properti 'roles', cek apakah peran pengguna termasuk di dalamnya.
-    return item.roles.includes(userRole);
-  });
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-company-50">

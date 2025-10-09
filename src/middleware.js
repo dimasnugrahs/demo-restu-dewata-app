@@ -2,7 +2,13 @@
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const protectedRoutes = ["/beranda", "/dashboard", "/"];
+const protectedRoutes = [
+  "/beranda",
+  "/customer",
+  "/",
+  "/transaction",
+  "/transactions",
+];
 const publicRoutes = ["/auth", "/auth/signup"];
 
 export async function middleware(request) {
@@ -47,5 +53,14 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ["/", "/dashboard", "/auth", "/auth/signup"],
+  matcher: [
+    "/",
+    "/dashboard",
+    "/auth",
+    "/auth/signup",
+    "/beranda",
+    "/transaction",
+    "/transactions",
+    "/customer",
+  ],
 };
