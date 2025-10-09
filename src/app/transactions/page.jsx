@@ -5,6 +5,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import DashboardLayout from "../components/DashboardLayout";
 import { useEffect, useState } from "react";
+import ExportButton from "../components/ExportExcel";
+import DeleteAllTransactionsButton from "../components/DeleteAllTransactions";
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState([]);
@@ -36,24 +38,33 @@ export default function TransactionsPage() {
     fetchTransactions();
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await axios.post("/api/auth/logout");
-      Swal.fire({
-        icon: "success",
-        title: "Sukses",
-        text: "Anda telah berhasil logout!",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      router.refresh();
-    } catch (err) {
-      console.error(err);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Gagal logout. Silakan coba lagi.",
-      });
+  const handleEdit = (transactionId) => {
+    // Arahkan ke halaman edit dengan ID pengguna
+    router.push(`/transactions/edit/${transactionId}`);
+  };
+
+  const handleDelete = async (transactionId) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) {
+      try {
+        const response = await fetch(`/api/transactions/${transactionId}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          // Perbarui state untuk menghilangkan pengguna yang sudah dihapus dari tabel
+          setTransactions(
+            transactions.filter(
+              (transaction) => transaction.id !== transactionId
+            )
+          );
+        } else {
+          const errorData = await response.json();
+          setError(errorData.message || "Gagal menghapus pengguna.");
+        }
+      } catch (err) {
+        console.error("Error deleting transaction:", err);
+        setError("Terjadi kesalahan jaringan saat menghapus.");
+      }
     }
   };
 
@@ -82,6 +93,10 @@ export default function TransactionsPage() {
         <h1 className="text-lg text-company-950">
           Menu untuk melihat semua riwayat transaksi.
         </h1>
+        <div>
+          <ExportButton />
+          <DeleteAllTransactionsButton />
+        </div>
         <div className="p-4 bg-company-100 w-full rounded-md mt-5 overflow-x-auto">
           {transactions.length === 0 ? (
             <p>Tidak ada data transaksi.</p>
@@ -113,6 +128,18 @@ export default function TransactionsPage() {
                   >
                     Deskripsi
                   </th>
+                  <th
+                    className="font-normal"
+                    style={{ padding: "8px", border: "1px solid #ddd" }}
+                  >
+                    Kode Kantor
+                  </th>
+                  <th
+                    className="font-normal"
+                    style={{ padding: "8px", border: "1px solid #ddd" }}
+                  >
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -137,6 +164,38 @@ export default function TransactionsPage() {
                     <td style={{ padding: "8px", border: "1px solid #ddd" }}>
                       {transaction.description}
                     </td>
+                    <td style={{ padding: "8px", border: "1px solid #ddd" }}>
+                      {transaction.office_code}
+                    </td>
+                    <td
+                      style={{ padding: "8px", border: "1px solid #ddd" }}
+                      className="text-center"
+                    >
+                      <button
+                        onClick={() => handleEdit(transaction.id)}
+                        style={{
+                          padding: "5px 10px",
+                          color: "white",
+                          border: "none",
+                          cursor: "pointer",
+                        }}
+                        className="bg-green-500 hover:bg-green-700 rounded mx-1"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(transaction.id)}
+                        style={{
+                          padding: "5px 10px",
+                          color: "white",
+                          border: "none",
+                          cursor: "pointer",
+                        }}
+                        className="bg-red-500 hover:bg-red-800 rounded  mx-1"
+                      >
+                        Hapus
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -144,20 +203,6 @@ export default function TransactionsPage() {
           )}
         </div>
       </DashboardLayout>
-      <button
-        onClick={handleLogout}
-        style={{
-          marginTop: "2rem",
-          padding: "0.75rem 1.5rem",
-          backgroundColor: "#dc3545",
-          color: "#fff",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-        }}
-      >
-        Logout
-      </button>
     </div>
   );
 }
