@@ -114,9 +114,9 @@ const UserIcon = (props) => (
 const navItems = [
   { name: "Home", href: "/beranda", icon: HomeIcon },
   { name: "Customers", href: "/customer", icon: UsersIcon },
-  { name: "Transactions", href: "/transactions", icon: TransactionsIcon },
   { name: "Transaction", href: "/transaction", icon: TransactionIcon },
-  { name: "Marketing", href: "/marketing", icon: UserIcon },
+  { name: "Transactions", href: "/transactions", icon: TransactionsIcon },
+  { name: "Users", href: "/user", icon: UsersIcon },
 ];
 
 export default function DashboardLayout({ children }) {

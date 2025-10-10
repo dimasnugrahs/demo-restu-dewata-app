@@ -7,6 +7,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import { useEffect, useState } from "react";
 import ExportButton from "../components/ExportExcel";
 import DeleteAllTransactionsButton from "../components/DeleteAllTransactions";
+import Link from "next/link";
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState([]);
@@ -125,6 +126,7 @@ export default function TransactionsPage() {
         <h1 className="text-lg text-company-950">
           Menu untuk melihat semua riwayat transaksi.
         </h1>
+
         {isAllowed && (
           <div>
             <ExportButton />
@@ -133,6 +135,11 @@ export default function TransactionsPage() {
         )}
 
         <div className="p-4 bg-company-100 w-full rounded-md mt-5 overflow-x-auto">
+          <Link href="/beranda" passHref>
+            <button className="py-2 px-4 mb-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-company-800 hover:bg-company-900 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50">
+              Kembali ke Beranda
+            </button>
+          </Link>
           {transactions.length === 0 ? (
             <p>Tidak ada data transaksi.</p>
           ) : (

@@ -8,51 +8,51 @@ import Swal from "sweetalert2";
 import DashboardLayout from "../components/DashboardLayout";
 import { useEffect, useState } from "react";
 
-export default function CustomerPage() {
-  const [customers, setCustomers] = useState([]);
+export default function UserPage() {
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchCustomers = async () => {
+    const fetchUsers = async () => {
       try {
-        const response = await fetch("/api/customers");
+        const response = await fetch("/api/users");
 
         if (response.ok) {
           const data = await response.json();
-          setCustomers(data.customers);
+          setUsers(data.users);
         } else {
           // Tangani kasus ketika otentikasi gagal atau API error
           const errorData = await response.json();
           setError(errorData.message || "Gagal mengambil data pengguna.");
         }
       } catch (err) {
-        console.error("Error fetching customers:", err);
+        console.error("Error fetching users:", err);
         setError("Terjadi kesalahan jaringan.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCustomers();
+    fetchUsers();
   }, []);
 
-  const handleEdit = (customerId) => {
+  const handleEdit = (userId) => {
     // Arahkan ke halaman edit dengan ID pengguna
-    router.push(`/dashboard/customers/edit/${customerId}`);
+    router.push(`/dashboard/users/edit/${userId}`);
   };
 
-  const handleDelete = async (customerId) => {
+  const handleDelete = async (userId) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) {
       try {
-        const response = await fetch(`/api/customers/${customerId}`, {
+        const response = await fetch(`/api/users/${userId}`, {
           method: "DELETE",
         });
 
         if (response.ok) {
           // Perbarui state untuk menghilangkan pengguna yang sudah dihapus dari tabel
-          setCustomers(customers.filter((customer) => customer.id !== customerId));
+          setUsers(users.filter((user) => user.id !== userId));
         } else {
           const errorData = await response.json();
           setError(errorData.message || "Gagal menghapus pengguna.");
@@ -95,7 +95,7 @@ export default function CustomerPage() {
       <div>
         <DashboardLayout>
           <h1 className="text-4xl font-bold mb-4 text-company-950">
-            Selamat Datang di Customers
+            Selamat Datang di Users
           </h1>
           <h1 className="text-lg text-company-950">
             Menu untuk melihat semua pengguna!

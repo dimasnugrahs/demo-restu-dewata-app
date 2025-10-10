@@ -61,11 +61,13 @@ export async function POST(req) {
       { status: 200 }
     );
 
+    const oneYearInSeconds = 365 * 24 * 60 * 60;
+
     response.cookies.set("authToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      maxAge: 60 * 60, // 1 jam
+      maxAge: oneYearInSeconds,
     });
 
     return response;
