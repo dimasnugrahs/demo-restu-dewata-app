@@ -9,14 +9,24 @@ export const metadata = {
 
 export default function Home() {
   return (
-    <div>
-      <div>Welcome to Restu Dewata App</div>
-      <Link
-        href="/beranda"
-        className="text-blue-950 text-2xl p-2 bg-company-200 rounded-md"
-      >
-        Restu App
-      </Link>
+    <div className="">
+      <div className="flex items-center justify-center">
+        <Image
+          className="mb-0"
+          src={"/images/icons/unauthorized-01.png"}
+          alt="Logo"
+          width={800}
+          height={100}
+        />
+      </div>
+      <div className="flex items-center justify-center ">
+        <Link
+          href="/beranda"
+          className="text-white px-10 mt-4 text-2xl p-2 bg-company-900 rounded-md"
+        >
+          Restu App
+        </Link>
+      </div>
     </div>
   );
 }

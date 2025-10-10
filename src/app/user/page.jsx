@@ -58,7 +58,7 @@ export default function CustomerPage() {
           setError(errorData.message || "Gagal menghapus pengguna.");
         }
       } catch (err) {
-        console.error("Error deleting customer:", err);
+        console.error("Error deleting user:", err);
         setError("Terjadi kesalahan jaringan saat menghapus.");
       }
     }
@@ -101,8 +101,8 @@ export default function CustomerPage() {
             Menu untuk melihat semua pengguna!
           </h1>
           <div className="p-4 bg-company-100 w-full rounded-md mt-5 overflow-x-auto">
-            {customers.length === 0 ? (
-              <p>Rendering on customers data.</p>
+            {users.length === 0 ? (
+              <p>Rendering on users data.</p>
             ) : (
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
@@ -117,19 +117,19 @@ export default function CustomerPage() {
                       className="font-normal"
                       style={{ padding: "8px", border: "1px solid #ddd" }}
                     >
-                      No Rekening
+                      Email
                     </th>
                     <th
                       className="font-normal"
                       style={{ padding: "8px", border: "1px solid #ddd" }}
                     >
-                      No Rek Alternatif
+                      Username
                     </th>
                     <th
                       className="font-normal"
                       style={{ padding: "8px", border: "1px solid #ddd" }}
                     >
-                      Kode Kantor
+                      Role
                     </th>
                     <th
                       className="font-normal"
@@ -140,30 +140,30 @@ export default function CustomerPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {customers.map((customer) => (
+                  {users.map((user) => (
                     <tr
-                      key={customer.id}
+                      key={user.id}
                       style={{ borderBottom: "1px solid #ddd" }}
                       className="bg-company-50"
                     >
                       <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                        {customer.full_name}
+                        {user.full_name}
                       </td>
                       <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                        {customer.nasabah_id}
+                        {user.email}
                       </td>
                       <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                        {customer.no_alternatif}
+                        {user.username}
                       </td>
                       <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                        {customer.type_customer}
+                        {user.role}
                       </td>
                       <td
                         style={{ padding: "8px", border: "1px solid #ddd" }}
                         className="text-center"
                       >
                         <button
-                          onClick={() => handleEdit(customer.id)}
+                          onClick={() => handleEdit(user.id)}
                           style={{
                             padding: "5px 10px",
                             color: "white",
@@ -175,7 +175,7 @@ export default function CustomerPage() {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(customer.id)}
+                          onClick={() => handleDelete(user.id)}
                           style={{
                             padding: "5px 10px",
                             color: "white",
