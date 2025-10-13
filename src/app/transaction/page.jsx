@@ -9,7 +9,7 @@ export default function TransactionPage() {
   return (
     <div>
       <DashboardLayout>
-        <h1 className="text-4xl font-bold mb-0 text-company-950">
+        <h1 className="text-4xl font-bold text-company-950">
           Tambah Transaksi
         </h1>
         <h1 className="text-lg text-company-950">

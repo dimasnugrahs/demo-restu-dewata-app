@@ -94,7 +94,7 @@ export default function UserPage() {
     <div>
       <div>
         <DashboardLayout>
-          <h1 className="text-4xl font-bold mb-4 text-company-950">
+          <h1 className="text-4xl font-bold text-company-950">
             Selamat Datang di Users
           </h1>
           <h1 className="text-lg text-company-950">

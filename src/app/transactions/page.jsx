@@ -120,7 +120,7 @@ export default function TransactionsPage() {
   return (
     <div>
       <DashboardLayout>
-        <h1 className="text-4xl font-bold mb-4 text-company-950">
+        <h1 className="text-4xl font-bold text-company-950">
           Daftar Transaksi
         </h1>
         <h1 className="text-lg text-company-950">
@@ -140,7 +140,7 @@ export default function TransactionsPage() {
               Kembali ke Beranda
             </button>
           </Link>
-          <Link href="/beranda" passHref>
+          <Link href="/transaction" passHref>
             <button className="py-2 ml-2 px-4 mb-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50">
               Tambah Transaksi
             </button>

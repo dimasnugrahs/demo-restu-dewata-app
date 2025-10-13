@@ -52,39 +52,36 @@ export default function BerandaPage() {
         }
 
         // ambil data statistik
-        const statsResponse = await fetch("/api/stats");
+
+        const [statsResponse, transactionResponse] = await Promise.all([
+          fetch("/api/stats"), // Ambil data statistik
+          fetch("/api/transactions/groupedTransactions"), // Ambil data transaksi yang dikelompokkan
+        ]); // Proses data statistik
+        // -----------------------------------------------------------
+
         if (statsResponse.ok) {
           const statsData = await statsResponse.json();
           setStats(statsData.stats);
         } else {
           console.error("Failed to fetch dashboard stats");
-        }
-
-        // 2. Ambil Data Transaksi yang Sudah Dikelompokkan
-        // URL disesuaikan dengan yang Anda gunakan di Postman
-        const transactionResponse = await fetch(
-          "/api/transactions/groupedTransactions"
-        );
+        } // Proses data transaksi
 
         if (transactionResponse.ok) {
           const transactionData = await transactionResponse.json();
-
-          // --- Konversi String ke Float ---
           const cleanData = (transactionData.groupedTransactions || []).map(
             (item) => ({
               ...item,
-              // Konversi total_amount dari string (misal: "170000") menjadi number
               total_amount: parseFloat(item.total_amount) || 0,
             })
           );
-
           setGroupedData(cleanData);
         } else {
           console.error("Failed to fetch grouped transactions");
         }
       } catch (error) {
-        console.error("Failed to fetch data:", error);
-        if (!isAuth) {
+        console.error("Failed to fetch data:", error); // Handle kegagalan otentikasi atau server
+        if (!user) {
+          // Cek ulang apakah user sudah berhasil dimuat (opsional)
           router.push("/auth");
         }
       } finally {
@@ -101,7 +98,7 @@ export default function BerandaPage() {
 
   return (
     <DashboardLayout>
-      <h1 className="text-4xl font-bold mb-4 text-company-950">
+      <h1 className="text-4xl font-bold text-company-950">
         Selamat Datang di Beranda
       </h1>
       <h1 className="text-lg text-company-950">
@@ -118,21 +115,21 @@ export default function BerandaPage() {
             </div>
           </div>
           <div className="p-4 bg-company-800 rounded text-sm text-company-50">
-            Users
+            Transactions
             <div className="text-company-50 text-2xl">
-              {formatCount(stats.users)}
+              {formatCount(stats.transactions)}
             </div>
           </div>
           <div className="p-4 bg-company-800 rounded text-sm text-company-50">
-            Balance
+            Balance - Code Unit Pusat
             <div className="text-company-50 text-2xl">
               {formatCurrency(stats.balance)}
             </div>
           </div>
           <div className="p-4 bg-company-800 rounded text-sm text-company-50">
-            Transactions
+            Balance - Code Unit Cabang
             <div className="text-company-50 text-2xl">
-              {formatCount(stats.transactions)}
+              {formatCurrency(stats.balance)}
             </div>
           </div>
         </div>
