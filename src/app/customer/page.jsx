@@ -3,8 +3,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import axios from "axios";
-import Swal from "sweetalert2";
 import DashboardLayout from "../components/DashboardLayout";
 import { useEffect, useState } from "react";
 
@@ -13,6 +11,7 @@ export default function CustomerPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
+  const [user, setUser] = useState([]);
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -35,8 +34,34 @@ export default function CustomerPage() {
       }
     };
 
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("/api/auth/user");
+
+        if (response.ok) {
+          // Menggunakan response.ok untuk memeriksa status 200
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          // Redirect jika tidak terautentikasi atau terjadi kesalahan
+          router.push("/auth");
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+        router.push("/auth");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchCustomers();
-  }, []);
+    fetchUserData();
+  }, [router]);
+
+  const allowedRoles = ["ADMIN", "SUPERADMIN"];
+
+  // Fungsi sederhana untuk memeriksa izin
+  const isAllowed = allowedRoles.includes(user.role);
 
   const handleEdit = (customerId) => {
     // Arahkan ke halaman edit dengan ID pengguna
@@ -52,7 +77,9 @@ export default function CustomerPage() {
 
         if (response.ok) {
           // Perbarui state untuk menghilangkan pengguna yang sudah dihapus dari tabel
-          setCustomers(customers.filter((customer) => customer.id !== customerId));
+          setCustomers(
+            customers.filter((customer) => customer.id !== customerId)
+          );
         } else {
           const errorData = await response.json();
           setError(errorData.message || "Gagal menghapus pengguna.");
@@ -61,32 +88,6 @@ export default function CustomerPage() {
         console.error("Error deleting customer:", err);
         setError("Terjadi kesalahan jaringan saat menghapus.");
       }
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await axios.post("/api/auth/logout");
-
-      // Menampilkan notifikasi sukses
-      Swal.fire({
-        icon: "success",
-        title: "Sukses",
-        text: "Anda telah berhasil logout!",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-
-      // PENTING: Panggil router.refresh() untuk memicu middleware.
-      // Middleware akan melihat cookie yang hilang dan mengalihkan ke halaman login.
-      router.refresh();
-    } catch (err) {
-      console.error(err);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Gagal logout. Silakan coba lagi.",
-      });
     }
   };
 
@@ -131,12 +132,14 @@ export default function CustomerPage() {
                     >
                       Kode Kantor
                     </th>
-                    <th
-                      className="font-normal"
-                      style={{ padding: "8px", border: "1px solid #ddd" }}
-                    >
-                      Aksi
-                    </th>
+                    {isAllowed && (
+                      <th
+                        className="font-normal"
+                        style={{ padding: "8px", border: "1px solid #ddd" }}
+                      >
+                        Action
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -158,35 +161,37 @@ export default function CustomerPage() {
                       <td style={{ padding: "8px", border: "1px solid #ddd" }}>
                         {customer.type_customer}
                       </td>
-                      <td
-                        style={{ padding: "8px", border: "1px solid #ddd" }}
-                        className="text-center"
-                      >
-                        <button
-                          onClick={() => handleEdit(customer.id)}
-                          style={{
-                            padding: "5px 10px",
-                            color: "white",
-                            border: "none",
-                            cursor: "pointer",
-                          }}
-                          className="bg-green-500 hover:bg-green-700 rounded mx-1"
+                      {isAllowed && (
+                        <td
+                          style={{ padding: "8px", border: "1px solid #ddd" }}
+                          className="text-center"
                         >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(customer.id)}
-                          style={{
-                            padding: "5px 10px",
-                            color: "white",
-                            border: "none",
-                            cursor: "pointer",
-                          }}
-                          className="bg-red-500 hover:bg-red-800 rounded  mx-1"
-                        >
-                          Hapus
-                        </button>
-                      </td>
+                          <button
+                            onClick={() => handleEdit(customer.id)}
+                            style={{
+                              padding: "5px 10px",
+                              color: "white",
+                              border: "none",
+                              cursor: "pointer",
+                            }}
+                            className="bg-green-500 hover:bg-green-700 rounded mx-1"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(customer.id)}
+                            style={{
+                              padding: "5px 10px",
+                              color: "white",
+                              border: "none",
+                              cursor: "pointer",
+                            }}
+                            className="bg-red-500 hover:bg-red-800 rounded  mx-1"
+                          >
+                            Hapus
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -194,21 +199,6 @@ export default function CustomerPage() {
             )}
           </div>
         </DashboardLayout>
-
-        <button
-          onClick={handleLogout}
-          style={{
-            marginTop: "2rem",
-            padding: "0.75rem 1.5rem",
-            backgroundColor: "#dc3545",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Logout
-        </button>
       </div>
     </div>
   );

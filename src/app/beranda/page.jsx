@@ -110,7 +110,7 @@ export default function BerandaPage() {
 
       <div className="p-4 bg-company-100 w-full rounded-md mt-5">
         {/* Bagian Statistik Dasar */}
-        <div className="grid grid-cols-2 gap-5 ">
+        <div className="grid grid-cols-2 md:grid-cols-1 gap-5 ">
           <div className="p-4 bg-company-800 rounded text-sm text-company-50">
             Customers
             <div className="text-company-50 text-2xl">
