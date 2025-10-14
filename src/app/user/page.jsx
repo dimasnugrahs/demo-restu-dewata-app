@@ -64,32 +64,6 @@ export default function UserPage() {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await axios.post("/api/auth/logout");
-
-      // Menampilkan notifikasi sukses
-      Swal.fire({
-        icon: "success",
-        title: "Sukses",
-        text: "Anda telah berhasil logout!",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-
-      // PENTING: Panggil router.refresh() untuk memicu middleware.
-      // Middleware akan melihat cookie yang hilang dan mengalihkan ke halaman login.
-      router.refresh();
-    } catch (err) {
-      console.error(err);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Gagal logout. Silakan coba lagi.",
-      });
-    }
-  };
-
   return (
     <div>
       <div>
@@ -163,29 +137,23 @@ export default function UserPage() {
                         className="text-center"
                       >
                         <button
-                          onClick={() => handleEdit(user.id)}
+                          // onClick={() => handleEdit(user.id)}
                           style={{
                             padding: "5px 10px",
                             color: "white",
                             border: "none",
-                            cursor: "pointer",
                           }}
-                          className="bg-green-500 hover:bg-green-700 rounded mx-1"
-                        >
-                          Edit
-                        </button>
+                          className=" rounded mx-1"
+                        ></button>
                         <button
-                          onClick={() => handleDelete(user.id)}
+                          // onClick={() => handleDelete(user.id)}
                           style={{
                             padding: "5px 10px",
                             color: "white",
                             border: "none",
-                            cursor: "pointer",
                           }}
-                          className="bg-red-500 hover:bg-red-800 rounded  mx-1"
-                        >
-                          Hapus
-                        </button>
+                          className=" rounded  mx-1"
+                        ></button>
                       </td>
                     </tr>
                   ))}
@@ -194,21 +162,6 @@ export default function UserPage() {
             )}
           </div>
         </DashboardLayout>
-
-        <button
-          onClick={handleLogout}
-          style={{
-            marginTop: "2rem",
-            padding: "0.75rem 1.5rem",
-            backgroundColor: "#dc3545",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Logout
-        </button>
       </div>
     </div>
   );

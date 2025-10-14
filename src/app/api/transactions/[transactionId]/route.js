@@ -10,6 +10,14 @@ export async function GET(request, { params }) {
       where: {
         id: params.transactionId,
       },
+      include: {
+        customer: {
+          select: {
+            // Pastikan menggunakan nama kolom yang benar di tabel customer
+            full_name: true,
+          },
+        },
+      },
     });
 
     //Check if transaction is found
@@ -33,6 +41,13 @@ export async function PATCH(req, { params }) {
     const transaction = await db.transaction.findFirst({
       where: {
         id: params.transactionId,
+      },
+      include: {
+        customer: {
+          select: {
+            full_name: true,
+          },
+        },
       },
     });
 

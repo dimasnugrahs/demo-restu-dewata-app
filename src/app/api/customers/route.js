@@ -85,7 +85,13 @@ export async function POST(req) {
 export async function GET() {
   try {
     // Ambil semua data customer dari database
-    const customers = await db.customer.findMany();
+    const customers = await db.customer.findMany({
+      // Tambahkan orderBy untuk mengurutkan
+      orderBy: {
+        created_at: "asc", // 'asc' = ascending (urutan naik, dari terkecil/paling lama ke terbesar/paling baru)
+        // Gunakan 'desc' untuk urutan sebaliknya (terbaru ke terlama)
+      },
+    });
 
     return NextResponse.json({ customers }, { status: 200 });
   } catch (error) {

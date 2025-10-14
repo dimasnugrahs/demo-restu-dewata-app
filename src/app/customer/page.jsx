@@ -285,7 +285,7 @@ export default function CustomerPage() {
               <p className="p-4 text-gray-500">
                 {searchTerm
                   ? `Tidak ditemukan data customer untuk kata kunci "${searchTerm}".`
-                  : "Tidak ada data customer untuk ditampilkan."}
+                  : "Sedang memuat data customer..."}
               </p>
             ) : (
               <div>

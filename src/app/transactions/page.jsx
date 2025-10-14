@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import ExportButton from "../components/ExportExcel";
 import DeleteAllTransactionsButton from "../components/DeleteAllTransactions";
 import Link from "next/link";
+import ExportButtonCabang from "../components/ExportExcelCabang";
+import DeleteAllTransactionsCabangButton from "../components/DeleteAllTransactionsCabang";
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState([]);
@@ -130,7 +132,7 @@ export default function TransactionsPage() {
         {isAllowed && (
           <div>
             <ExportButton />
-            <DeleteAllTransactionsButton />
+            <ExportButtonCabang />
           </div>
         )}
 
@@ -145,6 +147,12 @@ export default function TransactionsPage() {
               Tambah Transaksi
             </button>
           </Link>
+          {isAllowed && (
+            <>
+              <DeleteAllTransactionsButton />
+              <DeleteAllTransactionsCabangButton />
+            </>
+          )}
           {transactions.length === 0 ? (
             <p>Tidak ada data transaksi.</p>
           ) : (

@@ -11,7 +11,6 @@ export default function BerandaPage() {
   const [user, setUser] = useState(null);
   const [groupedData, setGroupedData] = useState([]);
   const [stats, setStats] = useState({
-    // State baru untuk statistik
     balance: 0,
     customers: 0,
     users: 0,
@@ -107,29 +106,37 @@ export default function BerandaPage() {
 
       <div className="p-4 bg-company-100 w-full rounded-md mt-5">
         {/* Bagian Statistik Dasar */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 ">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-5 mb-5">
           <div className="p-4 bg-company-800 rounded text-sm text-company-50">
             Customers
             <div className="text-company-50 text-2xl">
               {formatCount(stats.customers)}
             </div>
           </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 ">
           <div className="p-4 bg-company-800 rounded text-sm text-company-50">
-            Transactions
+            Transactions - Code Unit Pusat
             <div className="text-company-50 text-2xl">
-              {formatCount(stats.transactions)}
+              {formatCount(stats.transactionsPusat)}
+            </div>
+          </div>
+          <div className="p-4 bg-company-800 rounded text-sm text-company-50">
+            Transactions - Code Unit Cabang
+            <div className="text-company-50 text-2xl">
+              {formatCount(stats.transactionsCabang)}
             </div>
           </div>
           <div className="p-4 bg-company-800 rounded text-sm text-company-50">
             Balance - Code Unit Pusat
             <div className="text-company-50 text-2xl">
-              {formatCurrency(stats.balance)}
+              {formatCurrency(stats.balancePusat)}
             </div>
           </div>
           <div className="p-4 bg-company-800 rounded text-sm text-company-50">
             Balance - Code Unit Cabang
             <div className="text-company-50 text-2xl">
-              {formatCurrency(stats.balance)}
+              {formatCurrency(stats.balanceCabang)}
             </div>
           </div>
         </div>

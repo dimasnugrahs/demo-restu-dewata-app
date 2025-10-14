@@ -4,14 +4,14 @@ import { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-export default function ExportButton() {
+export default function ExportButtonCabang() {
   const [isExporting, setIsExporting] = useState(false);
 
   const handleExport = async () => {
     setIsExporting(true);
     try {
       // Panggil API export
-      const response = await axios.get("/api/exportexcel", {
+      const response = await axios.get("/api/exportexcelcabang", {
         responseType: "blob", // Penting: memberitahu axios untuk mengharapkan respons biner (file)
       });
 
@@ -119,7 +119,7 @@ export default function ExportButton() {
               clipRule="evenodd"
             />
           </svg>
-          Export ke Excel (Kantor Pusat)
+          Export ke Excel (Kantor Cabang)
         </>
       )}
     </button>

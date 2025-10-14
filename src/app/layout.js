@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Restu Dewata AppX",
+  title: "Restu Dewata App",
   description: "Restu Dewata App for Internal Employee",
   icons: "/images/icons/logo-tab.png",
 };
