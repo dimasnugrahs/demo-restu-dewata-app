@@ -52,13 +52,7 @@ export async function POST(req) {
       body;
 
     // Validasi data input
-    if (
-      !identifier ||
-      !transaction_type ||
-      !amount ||
-      !description ||
-      !office_code
-    ) {
+    if (!identifier || !transaction_type || !amount || !office_code) {
       return NextResponse.json(
         { message: "Semua field wajib diisi" },
         { status: 400 }
@@ -85,6 +79,8 @@ export async function POST(req) {
       // Hanya ambil ID-nya saja (sesuaikan dengan field Anda)
       select: {
         id: true,
+        nasabah_id: true,
+        full_name: true,
       },
     });
 
@@ -96,6 +92,11 @@ export async function POST(req) {
     }
 
     const nasabah_id = nasabah.id;
+    // 💡 KOREKSI B: Ambil Nomor Rekening yang sebenarnya
+    const no_rekening = nasabah.nasabah_id;
+    const full_name = nasabah.full_name;
+
+    const newDescription = `Setoran Mobile Collector - No rek ${no_rekening} - a.n ${full_name}`;
 
     // Simpan data transaksi ke database
     const newTransaction = await db.transaction.create({
@@ -104,7 +105,7 @@ export async function POST(req) {
         userId,
         transaction_type,
         amount: parseFloat(amount),
-        description,
+        description:newDescription,
         office_code,
       },
     });

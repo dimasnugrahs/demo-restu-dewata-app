@@ -226,7 +226,7 @@ export default function TransactionForm() {
         />
       </div>
 
-      <div>
+      {/* <div>
         <label
           htmlFor="description"
           className="block text-sm font-medium text-gray-700"
@@ -246,7 +246,7 @@ export default function TransactionForm() {
             Setoran Mobile Collector
           </option>
         </select>
-      </div>
+      </div> */}
 
       <div>
         <label
