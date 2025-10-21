@@ -106,7 +106,9 @@ export default function TransactionsPage() {
   if (loading) {
     return (
       <DashboardLayout>
-        <p>Memuat data...</p>
+        <div className="h-screen flex justify-center items-center text-company-800 text-2xl">
+          Sedang memuat data transaksi...
+        </div>
       </DashboardLayout>
     );
   }

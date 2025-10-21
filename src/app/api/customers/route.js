@@ -7,7 +7,6 @@ import { db } from "@/lib/db";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-// Fungsi untuk mendapatkan userId dari token JWT di cookie
 const getUserIdFromToken = () => {
   const cookieStore = cookies();
   const token = cookieStore.get("authToken")?.value;
@@ -41,7 +40,6 @@ export async function POST(req) {
       full_name,
     } = await req.json();
 
-    // Pastikan data yang diperlukan ada
     if (
       !nasabah_id ||
       !no_alternatif ||

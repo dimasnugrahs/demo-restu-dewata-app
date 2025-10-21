@@ -1,5 +1,3 @@
-// pages/beranda/index.js (BerandaPage.js)
-
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -19,7 +17,6 @@ export default function BerandaPage() {
   const [loading, setLoading] = useState(true);
 
   const formatCurrency = (amount) => {
-    // Pastikan input adalah angka, jika tidak, kembalikan 'Rp 0'
     if (typeof amount !== "number" || isNaN(amount)) return "Rp 0";
 
     return new Intl.NumberFormat("id-ID", {
@@ -30,7 +27,6 @@ export default function BerandaPage() {
     }).format(amount);
   };
 
-  // Fungsi utilitas untuk format jumlah (tanpa mata uang)
   const formatCount = (count) => {
     return new Intl.NumberFormat("id-ID").format(count);
   };
@@ -39,7 +35,6 @@ export default function BerandaPage() {
     const fetchAllData = async () => {
       let isAuth = false;
       try {
-        // 1. Ambil Data User (Autentikasi)
         const userResponse = await fetch("/api/auth/user");
         if (userResponse.ok) {
           const userData = await userResponse.json();
@@ -53,17 +48,16 @@ export default function BerandaPage() {
         // ambil data statistik
 
         const [statsResponse, transactionResponse] = await Promise.all([
-          fetch("/api/stats"), // Ambil data statistik
-          fetch("/api/transactions/groupedTransactions"), // Ambil data transaksi yang dikelompokkan
-        ]); // Proses data statistik
-        // -----------------------------------------------------------
+          fetch("/api/stats"),
+          fetch("/api/transactions/groupedTransactions"),
+        ]);
 
         if (statsResponse.ok) {
           const statsData = await statsResponse.json();
           setStats(statsData.stats);
         } else {
           console.error("Failed to fetch dashboard stats");
-        } // Proses data transaksi
+        }
 
         if (transactionResponse.ok) {
           const transactionData = await transactionResponse.json();
@@ -78,9 +72,8 @@ export default function BerandaPage() {
           console.error("Failed to fetch grouped transactions");
         }
       } catch (error) {
-        console.error("Failed to fetch data:", error); // Handle kegagalan otentikasi atau server
+        console.error("Failed to fetch data:", error);
         if (!user) {
-          // Cek ulang apakah user sudah berhasil dimuat (opsional)
           router.push("/auth");
         }
       } finally {
@@ -92,7 +85,11 @@ export default function BerandaPage() {
   }, [router]);
 
   if (!user || loading) {
-    return <div>Sedang memuat...</div>; // Tampilkan loading state minimal
+    return (
+      <div className="h-screen flex justify-center items-center text-company-800 text-2xl">
+        Sedang memuat...
+      </div>
+    ); // Tampilkan loading state minimal
   }
 
   return (
@@ -105,7 +102,6 @@ export default function BerandaPage() {
       </h1>
 
       <div className="p-4 bg-company-100 w-full rounded-md mt-5">
-        {/* Bagian Statistik Dasar */}
         <div className="grid grid-cols-1 md:grid-cols-1 gap-5 mb-5">
           <div className="p-4 bg-company-800 rounded text-sm text-company-50">
             Customers
@@ -141,7 +137,6 @@ export default function BerandaPage() {
           </div>
         </div>
 
-        {/* Bagian Tampilan Data Transaksi per User */}
         <div className="grid grid-cols-1">
           <div className="p-5 bg-company-50 mt-5 rounded shadow">
             <h2 className="text-xl font-semibold mb-3 text-company-950">
@@ -155,10 +150,8 @@ export default function BerandaPage() {
                     key={index}
                     className="flex justify-between items-center p-3 bg-white border border-company-100 rounded"
                   >
-                    {/* PERUBAHAN TAMPILAN DISINI */}
                     <span className="font-medium text-company-800 text-lg">
                       {item.full_name}
-                      {/* Keterangan Count di bawah atau di samping nama */}
                       <span className="block text-sm font-normal text-company-500">
                         {item.transaction_count} Transaksi
                       </span>
