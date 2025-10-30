@@ -96,7 +96,7 @@ export async function POST(req) {
     const no_rekening = nasabah.nasabah_id;
     const full_name = nasabah.full_name;
 
-    const newDescription = `Setoran Mobile Collector - No rek ${no_rekening} - a.n ${full_name}`;
+    const newDescription = `Setoran Mobile Collector No rek ${no_rekening} an ${full_name}`;
 
     // Simpan data transaksi ke database
     const newTransaction = await db.transaction.create({
@@ -105,7 +105,7 @@ export async function POST(req) {
         userId,
         transaction_type,
         amount: parseFloat(amount),
-        description:newDescription,
+        description: newDescription,
         office_code,
       },
     });
