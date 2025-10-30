@@ -266,6 +266,8 @@ export default function TransactionForm() {
           <option value="">Silahkan pilih kode kantor...</option>
           <option value="111">Kantor Pusat</option>
           <option value="116">Kantor Cabang Gianyar</option>
+          <option value="136">Kantor Pusat (Pengganti)</option>
+          <option value="129">Kantor Cabang (Pengganti)</option>
         </select>
       </div>
 

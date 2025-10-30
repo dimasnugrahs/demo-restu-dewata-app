@@ -165,6 +165,12 @@ export default function TransactionsPage() {
                     className="font-normal"
                     style={{ padding: "8px", border: "1px solid #ddd" }}
                   >
+                    No
+                  </th>
+                  <th
+                    className="font-normal"
+                    style={{ padding: "8px", border: "1px solid #ddd" }}
+                  >
                     Nama Nasabah
                   </th>
                   <th
@@ -202,63 +208,71 @@ export default function TransactionsPage() {
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((transaction) => (
-                  <tr
-                    key={transaction.id}
-                    style={{ borderBottom: "1px solid #ddd" }}
-                    className="bg-company-50"
-                  >
-                    <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                      {/* Pastikan relasi 'nasabah' ada */}
-                      {transaction.customer
-                        ? transaction.customer.full_name
-                        : "Tidak Ditemukan"}
-                    </td>
-                    <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                      {transaction.transaction_type}
-                    </td>
-                    <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                      {transaction.amount}
-                    </td>
-                    <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                      {transaction.description}
-                    </td>
-                    <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                      {transaction.office_code}
-                    </td>
-                    {isAllowed && (
-                      <td
-                        style={{ padding: "8px", border: "1px solid #ddd" }}
-                        className="text-center"
-                      >
-                        <button
-                          onClick={() => handleEdit(transaction.id)}
-                          style={{
-                            padding: "5px 10px",
-                            color: "white",
-                            border: "none",
-                            cursor: "pointer",
-                          }}
-                          className="bg-green-500 hover:bg-green-700 rounded mx-1"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(transaction.id)}
-                          style={{
-                            padding: "5px 10px",
-                            color: "white",
-                            border: "none",
-                            cursor: "pointer",
-                          }}
-                          className="bg-red-500 hover:bg-red-800 rounded  mx-1"
-                        >
-                          Hapus
-                        </button>
+                {transactions.map((transaction, index) => {
+                  const transactionNumber =
+                    // (currentPage - 1) * itemsPerPage +
+                    index + 1;
+                  return (
+                    <tr
+                      key={transaction.id}
+                      style={{ borderBottom: "1px solid #ddd" }}
+                      className="bg-company-50"
+                    >
+                      <td style={{ padding: "8px", border: "1px solid #ddd" }}>
+                        {transactionNumber}
                       </td>
-                    )}
-                  </tr>
-                ))}
+                      <td style={{ padding: "8px", border: "1px solid #ddd" }}>
+                        {/* Pastikan relasi 'nasabah' ada */}
+                        {transaction.customer
+                          ? transaction.customer.full_name
+                          : "Tidak Ditemukan"}
+                      </td>
+                      <td style={{ padding: "8px", border: "1px solid #ddd" }}>
+                        {transaction.transaction_type}
+                      </td>
+                      <td style={{ padding: "8px", border: "1px solid #ddd" }}>
+                        {transaction.amount}
+                      </td>
+                      <td style={{ padding: "8px", border: "1px solid #ddd" }}>
+                        {transaction.description}
+                      </td>
+                      <td style={{ padding: "8px", border: "1px solid #ddd" }}>
+                        {transaction.office_code}
+                      </td>
+                      {isAllowed && (
+                        <td
+                          style={{ padding: "8px", border: "1px solid #ddd" }}
+                          className="text-center"
+                        >
+                          <button
+                            onClick={() => handleEdit(transaction.id)}
+                            style={{
+                              padding: "5px 10px",
+                              color: "white",
+                              border: "none",
+                              cursor: "pointer",
+                            }}
+                            className="bg-green-500 hover:bg-green-700 rounded mx-1"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(transaction.id)}
+                            style={{
+                              padding: "5px 10px",
+                              color: "white",
+                              border: "none",
+                              cursor: "pointer",
+                            }}
+                            className="bg-red-500 hover:bg-red-800 rounded  mx-1"
+                          >
+                            Hapus
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}
