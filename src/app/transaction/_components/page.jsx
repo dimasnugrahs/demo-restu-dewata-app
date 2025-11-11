@@ -264,10 +264,10 @@ export default function TransactionForm() {
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
           <option value="">Silahkan pilih kode kantor...</option>
-          <option value="111">Kantor Pusat</option>
-          <option value="116">Kantor Cabang Gianyar</option>
-          <option value="136">Kantor Pusat (Pengganti)</option>
-          <option value="129">Kantor Cabang (Pengganti)</option>
+          <option value="111">ROSA JUANITA</option>
+          <option value="116">NI LUH AYU RIKAYANTI</option>
+          <option value="136">TELLER PUSAT (Pengganti)</option>
+          <option value="129">TELLER CABANG (Pengganti)</option>
         </select>
       </div>
 
