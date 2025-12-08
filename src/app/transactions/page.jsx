@@ -10,6 +10,7 @@ import DeleteAllTransactionsButton from "../components/DeleteAllTransactions";
 import Link from "next/link";
 import ExportButtonCabang from "../components/ExportExcelCabang";
 import DeleteAllTransactionsCabangButton from "../components/DeleteAllTransactionsCabang";
+import ExportMarketingButton from "../components/ExportMarketingGroupped";
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState([]);
@@ -24,6 +25,36 @@ export default function TransactionsPage() {
   //pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
+
+  //dropdown list
+  const [selectedMarketing, setSelectedMarketing] = useState("");
+
+  // Handler ketika nilai dropdown berubah
+  const handleChange = (event) => {
+    setSelectedMarketing(event.target.value);
+    setCurrentPage(1);
+  };
+
+  const uniqueMarketingNames = useMemo(() => {
+    // 1. Ambil semua nama marketing yang ada (dari relasi transaction.user.full_name)
+    const allNames = transactions
+      .map((t) => t.user?.full_name) // Gunakan optional chaining untuk keamanan
+      .filter(Boolean); // Hapus nilai null/undefined
+
+    // 2. Buat Set dari nama-nama tersebut untuk mendapatkan nilai unik
+    const uniqueNamesSet = new Set(allNames);
+
+    // 3. Konversi kembali ke array dan sortir (opsional)
+    // Format menjadi array objek { value: 'nama', label: 'Nama' }
+    const uniqueNamesArray = Array.from(uniqueNamesSet)
+      .sort((a, b) => a.localeCompare(b))
+      .map((name) => ({
+        value: name,
+        label: name,
+      }));
+
+    return uniqueNamesArray;
+  }, [transactions]);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -82,35 +113,39 @@ export default function TransactionsPage() {
 
   const filteredTransactions = useMemo(() => {
     const term = searchTerm.toLowerCase();
-    if (!term) return transactions;
+    let dataToFilter = transactions;
 
-    return transactions.filter((transaction) => {
-      // Menggunakan Optional Chaining (?.) untuk mengakses properti 'customer'
-      // dan Nullish Coalescing (?? '') untuk memastikan nilai adalah string kosong jika undefined/null.
-
-      // Data Customer
-      const customer = transaction.customer;
-      const fullName = customer?.full_name ?? "";
-      const nasabahId = customer?.nasabah_id ?? "";
-      const noAlternatif = customer?.no_alternatif ?? "";
-
-      // Perhatian: type_transaction biasanya ada di objek transaksi itu sendiri,
-      // namun di kode Anda sebelumnya ada di 'customer'. Jika di transaksi, gunakan:
-      const transactionType = transaction.transaction_type ?? "";
-      // Saya asumsikan Anda ingin mencari berdasarkan kolom di objek customer (sesuai kode Anda sebelumnya)
-      // Jika type_transaction ada di customer, gunakan:
-      const customerType = customer?.type_customer ?? ""; // Saya asumsikan nama field-nya type_customer seperti di halaman customer Anda sebelumnya
-
-      return (
-        fullName.toLowerCase().includes(term) ||
-        nasabahId.toString().includes(term) ||
-        noAlternatif.toString().includes(term) ||
-        customerType.toLowerCase().includes(term)
-        // Jika Anda ingin mencari berdasarkan tipe transaksi:
-        // transactionType.toLowerCase().includes(term)
+    // **[MODIFIKASI BARU]**
+    // 1. Filter berdasarkan Dropdown Marketing
+    if (selectedMarketing) {
+      dataToFilter = dataToFilter.filter(
+        (transaction) => transaction.user?.full_name === selectedMarketing
       );
-    });
-  }, [transactions, searchTerm]);
+    }
+
+    // 2. Filter berdasarkan Kotak Pencarian (Search Term)
+    if (term) {
+      dataToFilter = dataToFilter.filter((transaction) => {
+        // Data Customer
+        const customer = transaction.customer;
+        const fullName = customer?.full_name ?? "";
+        const nasabahId = customer?.nasabah_id ?? "";
+        const noAlternatif = customer?.no_alternatif ?? "";
+        const customerType = customer?.type_customer ?? "";
+        const transactionType = transaction.transaction_type ?? "";
+
+        return (
+          fullName.toLowerCase().includes(term) ||
+          nasabahId.toString().includes(term) ||
+          noAlternatif.toString().includes(term) ||
+          customerType.toLowerCase().includes(term) ||
+          transactionType.toLowerCase().includes(term)
+        );
+      });
+    }
+
+    return dataToFilter;
+  }, [transactions, searchTerm, selectedMarketing]);
 
   //pagination
   const totalPages = useMemo(() => {
@@ -266,31 +301,69 @@ export default function TransactionsPage() {
             <>
               <DeleteAllTransactionsButton />
               <DeleteAllTransactionsCabangButton />
-              <div className="relative w-full sm:w-64 mb-4">
-                <input
-                  type="text"
-                  placeholder="Cari (Nama, Rekening, Kode Kantor...)"
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setCurrentPage(1); // Reset halaman ke 1 saat pencarian
-                  }}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-900 rounded-lg shadow-sm focus:ring-company-500 focus:border-company-900 text-sm"
-                />
-                <svg
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-              </div>
             </>
           )}
+
+          <div className="flex justify-start gap-2 lg:mt-0 mt-2">
+            <div className="relative w-full sm:w-64 mb-4">
+              <input
+                type="text"
+                placeholder="Cari (Nama, Rekening, Kode Kantor...)"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1); // Reset halaman ke 1 saat pencarian
+                }}
+                className="w-full pl-10 pr-4 py-2 border border-gray-900 rounded-lg shadow-sm focus:ring-company-500 focus:border-company-900 text-sm"
+              />
+              <svg
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+            <div className="">
+              <select
+                value={selectedMarketing}
+                onChange={handleChange}
+                className="py-2 border rounded-lg px-10"
+              >
+                {/* Opsi default/placeholder untuk reset filter */}
+                <option value="">-- Semua Marketing --</option>
+
+                {/* Mapping daftar opsi dari data transaksi yang unik */}
+                {uniqueMarketingNames.map((marketing) => {
+                  // Ambil label lengkap dari objek (nama lengkap marketing)
+                  const fullLabel = marketing.label;
+
+                  // Logika Pemotongan: Batasi hingga 15 karakter
+                  const displayedLabel =
+                    fullLabel && fullLabel.length > 15
+                      ? fullLabel.substring(0, 15) + "..."
+                      : fullLabel;
+
+                  return (
+                    <option key={marketing.value} value={marketing.value}>
+                      {/* Menggunakan label yang sudah dipotong (maks 15 karakter) */}
+                      {displayedLabel}
+                    </option>
+                  );
+                })}
+              </select>
+              {selectedMarketing && (
+                <ExportMarketingButton
+                  marketingName={selectedMarketing}
+                  // Anda TIDAK perlu lagi meneruskan filteredTransactions, karena backend yang akan memfilter
+                />
+              )}
+            </div>
+          </div>
           {filteredTransactions.length === 0 ? (
             <p className="p-4 text-company-950 bg-company-200 rounded pb-20">
               {searchTerm
@@ -303,44 +376,50 @@ export default function TransactionsPage() {
                 <thead>
                   <tr className="bg-company-950 text-white font-display">
                     <th
-                      className="font-normal"
+                      className="font-normal w-[5%]"
                       style={{ padding: "8px", border: "1px solid #ddd" }}
                     >
                       No
                     </th>
                     <th
-                      className="font-normal"
+                      className="font-normal w-[20%]"
                       style={{ padding: "8px", border: "1px solid #ddd" }}
                     >
                       Nama Nasabah
                     </th>
                     <th
-                      className="font-normal"
+                      className="font-normal w-[10%]"
                       style={{ padding: "8px", border: "1px solid #ddd" }}
                     >
                       Jenis Transaksi
                     </th>
                     <th
-                      className="font-normal"
+                      className="font-normal w-[20%]"
                       style={{ padding: "8px", border: "1px solid #ddd" }}
                     >
                       Jumlah
                     </th>
                     <th
-                      className="font-normal"
+                      className="font-normal w-[25%]"
                       style={{ padding: "8px", border: "1px solid #ddd" }}
                     >
                       Deskripsi
                     </th>
                     <th
-                      className="font-normal"
+                      className="font-normal w-[20%]"
+                      style={{ padding: "8px", border: "1px solid #ddd" }}
+                    >
+                      Nama Marketing
+                    </th>
+                    <th
+                      className="font-normal w-[20%]"
                       style={{ padding: "8px", border: "1px solid #ddd" }}
                     >
                       Kode Kantor
                     </th>
                     {isAllowed && (
                       <th
-                        className="font-normal"
+                        className="font-normal w-[20%]"
                         style={{ padding: "8px", border: "1px solid #ddd" }}
                       >
                         Action
@@ -371,6 +450,7 @@ export default function TransactionsPage() {
                             ? transaction.customer.full_name
                             : "Tidak Ditemukan"}
                         </td>
+
                         <td
                           style={{ padding: "8px", border: "1px solid #ddd" }}
                         >
@@ -385,6 +465,14 @@ export default function TransactionsPage() {
                           style={{ padding: "8px", border: "1px solid #ddd" }}
                         >
                           {transaction.description}
+                        </td>
+                        <td
+                          style={{ padding: "8px", border: "1px solid #ddd" }}
+                        >
+                          {/* Pastikan relasi 'nasabah' ada */}
+                          {transaction.user
+                            ? transaction.user.full_name
+                            : "Tidak Ditemukan"}
                         </td>
                         <td
                           style={{ padding: "8px", border: "1px solid #ddd" }}

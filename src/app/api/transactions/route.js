@@ -9,6 +9,7 @@ export async function GET() {
     const transactions = await db.transaction.findMany({
       include: {
         customer: true, // Sertakan data nasabah yang berelasi
+        user: true,
       },
     });
 
