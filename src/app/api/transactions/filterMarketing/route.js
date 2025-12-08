@@ -83,7 +83,7 @@ export async function GET(request) {
         // Menggunakan toString() untuk Decimal
         jumlah: t.amount.toString(),
         deskripsi: t.description,
-        marketing: t.user?.full_name || "N/A",
+        marketing: t.user?.full_name || "N/Ax",
       });
     });
 
