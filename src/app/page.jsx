@@ -21,10 +21,10 @@ export default function Home() {
       </div>
       <div className="flex items-center justify-center ">
         <Link
-          href="/beranda"
-          className="text-white px-10 mt-4 text-2xl p-2 bg-company-900 rounded-md"
+          href="/transaction"
+          className="text-white px-10 mt-4 text-2xl p-2 mx-20 text-center bg-company-900 rounded-md"
         >
-          Restu App
+          Klik Untuk Menggunakan Aplikasi sebagai Marketing
         </Link>
       </div>
     </div>

@@ -403,7 +403,7 @@ export default function TransactionsPage() {
                                 color: "white",
                                 border: "none",
                                 cursor: "pointer",
-                                margin: "0px 0px 4px 0px"
+                                margin: "0px 0px 4px 0px",
                               }}
                               className="bg-green-500 hover:bg-green-700 rounded mx-1"
                             >

@@ -40,7 +40,7 @@ export async function middleware(request) {
 
   // 3. Jika pengguna sudah login (token valid) dan mencoba rute publik, redirect
   if (publicRoutes.includes(currentPath) && userPayload) {
-    return NextResponse.redirect(new URL("/beranda", request.url));
+    return NextResponse.redirect(new URL("/transaction", request.url));
   }
 
   // Lanjutkan request. Jika token valid, tambahkan data pengguna ke header
