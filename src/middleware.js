@@ -6,7 +6,7 @@ const protectedRoutes = [
   "/beranda",
   "/customer",
   "/transactions",
-  "/users",
+  "/user",
   "/transaction",
 ];
 const publicRoutes = ["/auth", "/auth/signup"];
@@ -51,9 +51,9 @@ export async function middleware(request) {
   }
 
   // Penanganan Rute Root (Opsional, tapi sering dilakukan)
-  // Jika pengguna mengakses rute root (/) dan sudah login, arahkan ke /beranda
+  // Jika pengguna mengakses rute root (/) dan sudah login, arahkan ke /transaction
   if (currentPath === "/" && userPayload) {
-    return NextResponse.redirect(new URL("/beranda", request.url));
+    return NextResponse.redirect(new URL("/transaction", request.url));
   }
 
   return response;
@@ -68,5 +68,6 @@ export const config = {
     "/transaction",
     "/transactions",
     "/customer",
+    "/user",
   ],
 };
