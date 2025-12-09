@@ -5,9 +5,9 @@ import { jwtVerify } from "jose";
 const protectedRoutes = [
   "/beranda",
   "/customer",
-  "/",
-  "/transaction",
   "/transactions",
+  "/users",
+  "/transaction",
 ];
 const publicRoutes = ["/auth", "/auth/signup"];
 
@@ -25,30 +25,37 @@ export async function middleware(request) {
       );
       userPayload = payload;
     } catch (error) {
-      console.error("Token verification failed:", error);
-      // Token tidak valid, hapus cookie
+      // Jika token tidak valid, hapus cookie dan redirect ke /auth
       const response = NextResponse.redirect(new URL("/auth", request.url));
       response.cookies.set("authToken", "", { maxAge: 0 });
       return response;
     }
   }
 
-  // 2. Jika pengguna mencoba rute yang dilindungi dan token tidak valid, redirect
+  // --- Bagian 2: Penanganan Rute Publik (Jika sudah login, jangan biarkan akses /auth) ---
+  if (publicRoutes.includes(currentPath) && userPayload) {
+    // Jika user sudah login dan mencoba mengakses /auth, redirect ke /beranda atau rute default
+    return NextResponse.redirect(new URL("/transaction", request.url));
+  }
+
+  // 3. Jika pengguna sudah login (token valid) dan mencoba rute publik, redirect
   if (protectedRoutes.includes(currentPath) && !userPayload) {
     return NextResponse.redirect(new URL("/auth", request.url));
   }
 
-  // 3. Jika pengguna sudah login (token valid) dan mencoba rute publik, redirect
-  if (publicRoutes.includes(currentPath) && userPayload) {
-    return NextResponse.redirect(new URL("/transaction", request.url));
-  }
-
-  // Lanjutkan request. Jika token valid, tambahkan data pengguna ke header
-  // Ini adalah bagian TERPENTING untuk mengambil data di halaman dashboard
   const response = NextResponse.next();
+
+  // Tambahkan payload ke header untuk pengambilan data pengguna di komponen server
   if (userPayload) {
     response.headers.set("x-user-payload", JSON.stringify(userPayload));
   }
+
+  // Penanganan Rute Root (Opsional, tapi sering dilakukan)
+  // Jika pengguna mengakses rute root (/) dan sudah login, arahkan ke /beranda
+  if (currentPath === "/" && userPayload) {
+    return NextResponse.redirect(new URL("/beranda", request.url));
+  }
+
   return response;
 }
 
@@ -56,8 +63,7 @@ export const config = {
   matcher: [
     "/",
     "/dashboard",
-    "/auth",
-    "/auth/signup",
+    "/auth/:path*",
     "/beranda",
     "/transaction",
     "/transactions",
