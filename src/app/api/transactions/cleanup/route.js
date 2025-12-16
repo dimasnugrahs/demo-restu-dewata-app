@@ -51,7 +51,7 @@ export async function DELETE(req) {
     // Jalankan perintah penghapusan massal
     const result = await db.transaction.deleteMany({
       where: {
-        office_code: "111", // Tambahkan filter di sini
+        OR: [{ office_code: "116" }, { office_code: "129" }],
       },
     });
 

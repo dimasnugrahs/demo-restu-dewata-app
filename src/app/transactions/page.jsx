@@ -29,6 +29,24 @@ export default function TransactionsPage() {
   //dropdown list
   const [selectedMarketing, setSelectedMarketing] = useState("");
 
+  const formatRupiah = (amount) => {
+    if (amount === null || amount === undefined || amount === "") return "0";
+
+    // currency
+    const numberAmount = parseFloat(amount);
+    if (isNaN(numberAmount)) return "0";
+
+    const formattedString = new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(numberAmount);
+
+    // Hapus simbol 'Rp' dan spasi yang mungkin ada, lalu kembalikan string yang bersih
+    return formattedString.replace("Rp", "").trim();
+  };
+
   // Handler ketika nilai dropdown berubah
   const handleChange = (event) => {
     setSelectedMarketing(event.target.value);
@@ -269,7 +287,7 @@ export default function TransactionsPage() {
   }
 
   return (
-    <div>
+    <div className="lg:mb-0 mb-40">
       <DashboardLayout>
         <h1 className="text-4xl font-bold text-company-950">
           Daftar Transaksi
@@ -304,8 +322,8 @@ export default function TransactionsPage() {
             </>
           )}
 
-          <div className="flex justify-start gap-2 lg:mt-0 mt-2">
-            <div className="relative w-full sm:w-64 mb-4">
+          <div className="grid grid-cols-1 lg:flex lg:justify-start gap-2 mb-0 lg:mb-4 mt-2">
+            <div className="relative w-full sm:w-100">
               <input
                 type="text"
                 placeholder="Cari (Nama, Rekening, Kode Kantor...)"
@@ -314,10 +332,10 @@ export default function TransactionsPage() {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1); // Reset halaman ke 1 saat pencarian
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-900 rounded-lg shadow-sm focus:ring-company-500 focus:border-company-900 text-sm"
+                className="w-full py-2 border border-gray-900 rounded-lg shadow-sm text-sm px-10"
               />
               <svg
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
+                className="absolute left-3 top-1/2 lg:top-2/6 transform -translate-y-1/2 h-4 w-4 text-gray-400"
                 fill="none"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -328,7 +346,7 @@ export default function TransactionsPage() {
                 <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
               </svg>
             </div>
-            <div className="">
+            <div className="mb-2 lg:mb-0">
               <select
                 value={selectedMarketing}
                 onChange={handleChange}
@@ -439,6 +457,7 @@ export default function TransactionsPage() {
                       >
                         <td
                           style={{ padding: "8px", border: "1px solid #ddd" }}
+                          className="text-center"
                         >
                           {transactionNumber}
                         </td>
@@ -459,7 +478,7 @@ export default function TransactionsPage() {
                         <td
                           style={{ padding: "8px", border: "1px solid #ddd" }}
                         >
-                          {transaction.amount}
+                          {formatRupiah(transaction.amount)}
                         </td>
                         <td
                           style={{ padding: "8px", border: "1px solid #ddd" }}

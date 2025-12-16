@@ -109,7 +109,7 @@ export default function ExportMarketingButton({ marketingName }) {
       onClick={handleExport}
       // Menonaktifkan jika sedang mengekspor atau jika marketing belum dipilih
       disabled={isExporting || !marketingName}
-      className="py-2 ml-2 px-4 mb-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition duration-150 ease-in-out"
+      className="py-2 ml-0 lg:ml-2 mt-2 lg:mt-0 px-4 mb-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition duration-150 ease-in-out"
     >
       {isExporting ? (
         // SVG Loading Spinner Anda

@@ -42,7 +42,7 @@ export async function PATCH(req, { params }) {
     }
 
     //Get name user from body
-    const { full_name } = await req.json();
+    const { full_name, role, email, username, access_token } = await req.json();
 
     //Update nasabah
     const updateUser = await db.user.update({
@@ -51,6 +51,10 @@ export async function PATCH(req, { params }) {
       },
       data: {
         full_name: full_name,
+        role: role,
+        email: email,
+        username: username,
+        access_token: access_token,
       },
     });
 

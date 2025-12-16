@@ -137,7 +137,7 @@ export default function BerandaPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1">
+        <div className="grid grid-cols-1 mb-40 lg:mb-0">
           <div className="p-5 bg-company-50 mt-5 rounded shadow">
             <h2 className="text-xl font-semibold mb-3 text-company-950">
               Rekap Transaksi Berdasarkan Input User

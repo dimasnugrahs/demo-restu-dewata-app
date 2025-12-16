@@ -5,6 +5,35 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import Link from "next/link";
 
+const formatCurrency = (value) => {
+  // Hanya ambil angka (atau string angka)
+  if (value === null || value === undefined || value === "") return "";
+
+  // Pastikan value adalah number sebelum formatting
+  const numberValue = parseFloat(value);
+  if (isNaN(numberValue)) return "";
+
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })
+    .format(numberValue)
+    .replace("Rp", "")
+    .trim(); // Hapus 'Rp ' agar input lebih bersih
+};
+
+/**
+ * Menghapus pemformatan agar menjadi angka murni (e.g., "1000000")
+ */
+const cleanCurrencyFormat = (formattedString) => {
+  if (typeof formattedString !== "string") return "";
+  // Hapus semua karakter non-digit kecuali tanda koma (jika desimal diizinkan)
+  // Untuk kasus ini (IDR/rupiah), kita hanya ambil digit
+  return formattedString.replace(/[^\d]/g, "");
+};
+
 // Utility function for debouncing (menghindari terlalu banyak panggilan API)
 const debounce = (func, delay) => {
   let timeoutId;
@@ -26,10 +55,28 @@ export default function TransactionForm() {
     description: "",
     office_code: "",
   });
+
+  // State baru: Menyimpan teks yang ditampilkan di input (misalnya: "1234 - Nama Lengkap")
+  const [displayIdentifier, setDisplayIdentifier] = useState("");
+
+  // State baru untuk input Jumlah yang diformat (yang terlihat oleh pengguna)
+  const [displayAmount, setDisplayAmount] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]); // State untuk menampung saran
   const [isSearching, setIsSearching] = useState(false); // State loading untuk saran
   const formRef = useRef(null); // Ref untuk menutup suggestion saat klik di luar
+
+  // Sinkronisasi displayAmount saat formData.amount di-reset (misal setelah submit sukses)
+  useEffect(() => {
+    // Jika formData.amount berubah (misalnya menjadi "" setelah reset), update tampilan
+    if (formData.amount === "") {
+      setDisplayAmount("");
+    } else {
+      // Jika ada nilai, format ulang untuk ditampilkan
+      setDisplayAmount(formatCurrency(formData.amount));
+    }
+  }, [formData.amount]);
 
   // Fungsi pencarian nasabah yang di-debounce
   const searchNasabah = useCallback(
@@ -57,6 +104,43 @@ export default function TransactionForm() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    if (name === "amount-display") {
+      const cleanedValueString = cleanCurrencyFormat(value);
+      const numericValue = parseInt(cleanedValueString, 10) || "";
+
+      // 1. Simpan nilai MURNI (Number/String Number) ke formData
+      setFormData((prevData) => ({
+        ...prevData,
+        amount: numericValue,
+      }));
+
+      // 2. Set displayAmount dengan nilai yang terformat
+      // Ini akan memicu useEffect di atas (atau kita bisa langsung set di sini)
+      // Kita langsung set di sini untuk feedback visual yang lebih cepat
+      setDisplayAmount(formatCurrency(numericValue));
+
+      return; // Hentikan fungsi agar tidak masuk ke setFormData umum
+    }
+
+    if (name === "identifier-display") {
+      // Gunakan nama baru untuk input tampilan
+
+      // Saat pengguna mengetik, set displayIdentifier ke value yang diketik.
+      setDisplayIdentifier(value);
+
+      // Set formData.identifier ke value yang diketik.
+      // Ini akan berisi string pencarian (misal: "budi"),
+      // dan akan diganti dengan ID murni saat saran dipilih.
+      setFormData((prevData) => ({
+        ...prevData,
+        identifier: value,
+      }));
+
+      // Panggil pencarian nasabah
+      searchNasabah(value);
+      return;
+    }
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -69,13 +153,17 @@ export default function TransactionForm() {
   };
 
   const handleSelectSuggestion = (customer) => {
+    const formattedDisplay = `${customer.id} - ${customer.full_name}`;
+
+    setDisplayIdentifier(formattedDisplay);
     // Saat saran dipilih, kita mengisi input dengan ID nasabah yang sebenarnya.
     // Ini penting agar API transaksi (yang mencari ID nasabah) mendapatkan ID yang valid
     setFormData((prevData) => ({
       ...prevData,
-      identifier: customer.id,
+      identifier: customer.id, // ID nasabah yang murni
     }));
-    setSuggestions([]); // Tutup daftar saran
+
+    setSuggestions([]);
   };
 
   // useEffect untuk menutup saran saat mengklik di luar form
@@ -143,9 +231,9 @@ export default function TransactionForm() {
         </label>
         <input
           type="text"
-          id="identifier"
-          name="identifier"
-          value={formData.identifier}
+          id="identifier-display"
+          name="identifier-display"
+          value={displayIdentifier}
           onChange={handleChange}
           required
           autoComplete="off"
@@ -208,7 +296,7 @@ export default function TransactionForm() {
         </select>
       </div>
 
-      <div>
+      {/* <div>
         <label
           htmlFor="amount"
           className="block text-sm font-medium text-gray-700"
@@ -219,11 +307,40 @@ export default function TransactionForm() {
           type="number"
           id="amount"
           name="amount"
+          placeholder="0.00"
+          step="0.01"
+          min="0"
           value={formData.amount}
           onChange={handleChange}
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
+      </div> */}
+
+      <div>
+        <label
+          htmlFor="amount-display"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Jumlah
+        </label>
+        <div className="relative mt-1">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 pr-2 text-gray-500 sm:text-sm">
+            Rp
+          </span>
+          <input
+            type="text"
+            id="amount-display"
+            name="amount-display"
+            value={displayAmount}
+            onChange={handleChange}
+            required
+            placeholder="0"
+            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+        {/* Input Tersembunyi untuk menyimpan nilai angka murni */}
+        <input type="hidden" name="amount" value={formData.amount} />
       </div>
 
       {/* <div>
