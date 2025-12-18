@@ -11,6 +11,8 @@ import Link from "next/link";
 import ExportButtonCabang from "../components/ExportExcelCabang";
 import DeleteAllTransactionsCabangButton from "../components/DeleteAllTransactionsCabang";
 import ExportMarketingButton from "../components/ExportMarketingGroupped";
+import ExportButtonKas from "../components/ExportExcelKas";
+import DeleteAllTransactionsKasButton from "../components/DeleteAllTransactionsKas";
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState([]);
@@ -297,29 +299,33 @@ export default function TransactionsPage() {
         </h1>
 
         {isAllowed && (
-          <div>
+          <div className="lg:flex grid grid-cols-1 gap-2">
             <ExportButton />
             <ExportButtonCabang />
+            <ExportButtonKas />
           </div>
         )}
 
         <div className="p-4 bg-company-100 w-full rounded-md mt-5 overflow-x-auto">
-          <Link href="/beranda" passHref>
-            <button className="py-2 px-4 mb-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-company-800 hover:bg-company-900 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50">
-              Kembali ke Beranda
-            </button>
-          </Link>
-          <Link href="/transaction" passHref>
-            <button className="py-2 ml-2 px-4 mb-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50">
-              Tambah Transaksi
-            </button>
-          </Link>
+          <div className="mb-2">
+            <Link href="/beranda" passHref>
+              <button className="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-company-800 hover:bg-company-900 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50">
+                Kembali ke Beranda
+              </button>
+            </Link>
+            <Link href="/transaction" passHref>
+              <button className="py-2 ml-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50">
+                Tambah Transaksi
+              </button>
+            </Link>
+          </div>
 
           {isAllowed && (
-            <>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
               <DeleteAllTransactionsButton />
               <DeleteAllTransactionsCabangButton />
-            </>
+              <DeleteAllTransactionsKasButton />
+            </div>
           )}
 
           <div className="grid grid-cols-1 lg:flex lg:justify-start gap-2 mb-0 lg:mb-4 mt-2">
@@ -335,7 +341,7 @@ export default function TransactionsPage() {
                 className="w-full py-2 border border-gray-900 rounded-lg shadow-sm text-sm px-10"
               />
               <svg
-                className="absolute left-3 top-1/2 lg:top-2/6 transform -translate-y-1/2 h-4 w-4 text-gray-400"
+                className="absolute left-3 top-1/2 lg:top-3/6 transform -translate-y-1/2 h-4 w-4 text-gray-400"
                 fill="none"
                 strokeLinecap="round"
                 strokeLinejoin="round"

@@ -230,8 +230,10 @@ export default function EditTransactionPage() {
               <option value="">Silahkan pilih kode kantor...</option>
               <option value="111">ROSA JUANITA</option>
               <option value="116">NI LUH AYU RIKAYANTI</option>
+              <option value="139">NI LUH WAYAN MIRAH AYU PUSPASARI</option>
               <option value="136">TELLER PUSAT (Pengganti)</option>
               <option value="129">TELLER CABANG (Pengganti)</option>
+              <option value="138">TELLER KAS (Pengganti)</option>
             </select>
           </div>
 

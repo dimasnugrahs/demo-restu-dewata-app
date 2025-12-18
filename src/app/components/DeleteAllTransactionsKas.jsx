@@ -4,7 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-export default function DeleteAllTransactionsButton() {
+export default function DeleteAllTransactionsKasButton() {
   const [loading, setLoading] = useState(false);
 
   const handleDeleteAll = async () => {
@@ -30,7 +30,7 @@ export default function DeleteAllTransactionsButton() {
     try {
       // Panggil API DELETE dengan parameter deleteAll=true
       const response = await axios.delete(
-        "/api/transactions/cleanup?deleteAll=true"
+        "/api/transactions/cleanupkas?deleteAll=true"
       );
 
       // Tampilkan notifikasi sukses
@@ -65,9 +65,9 @@ export default function DeleteAllTransactionsButton() {
     <button
       onClick={handleDeleteAll}
       disabled={loading}
-      className="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 transition duration-150 ease-in-out"
+      className="py-2 px-4 ml-0 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 transition duration-150 ease-in-out"
     >
-      {loading ? "Menghapus..." : "Hapus SEMUA Transaksi Permanen (Pusat)"}
+      {loading ? "Menghapus..." : "Hapus SEMUA Transaksi Permanen (Kas)"}
     </button>
   );
 }
