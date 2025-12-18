@@ -110,7 +110,7 @@ export default function BerandaPage() {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 ">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 ">
           <div className="p-4 bg-company-800 rounded text-sm text-company-50">
             Transactions - Code Unit Pusat
             <div className="text-company-50 text-2xl">
@@ -124,6 +124,12 @@ export default function BerandaPage() {
             </div>
           </div>
           <div className="p-4 bg-company-800 rounded text-sm text-company-50">
+            Transactions - Code Unit Kas
+            <div className="text-company-50 text-2xl">
+              {formatCount(stats.transactionsKas)}
+            </div>
+          </div>
+          <div className="p-4 bg-company-800 rounded text-sm text-company-50">
             Balance - Code Unit Pusat
             <div className="text-company-50 text-2xl">
               {formatCurrency(stats.balancePusat)}
@@ -133,6 +139,12 @@ export default function BerandaPage() {
             Balance - Code Unit Cabang
             <div className="text-company-50 text-2xl">
               {formatCurrency(stats.balanceCabang)}
+            </div>
+          </div>
+          <div className="p-4 bg-company-800 rounded text-sm text-company-50">
+            Balance - Code Unit Kas
+            <div className="text-company-50 text-2xl">
+              {formatCurrency(stats.balanceKas)}
             </div>
           </div>
         </div>
