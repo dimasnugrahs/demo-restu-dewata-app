@@ -41,7 +41,7 @@ export async function DELETE(req) {
       }
 
       whereCondition = {
-        OR: [{ office_code: "116" }, { office_code: "129" }], // Tambahkan filter di sini
+        OR: [{ office_code: "138" }, { office_code: "139" }], // Tambahkan filter di sini
         createdAt: {
           lt: dateFilter, // lt = less than (kurang dari). Menghapus rekaman yang dibuat sebelum tanggal ini.
         },
@@ -51,7 +51,7 @@ export async function DELETE(req) {
     // Jalankan perintah penghapusan massal
     const result = await db.transaction.deleteMany({
       where: {
-        OR: [{ office_code: "116" }, { office_code: "129" }],
+        OR: [{ office_code: "138" }, { office_code: "139" }],
       },
     });
 

@@ -71,7 +71,7 @@ export async function GET() {
     // Ambil semua data transaksi, diurutkan berdasarkan tanggal terbaru
     const transactions = await db.transaction.findMany({
       where: {
-        OR: [{ office_code: "116" }, { office_code: "129" }], // HANYA ambil transaksi yang office_code-nya "111"
+        OR: [{ office_code: "139" }, { office_code: "138" }], // HANYA ambil transaksi yang office_code-nya "111"
       },
       // >>>>>> PENYESUAIAN UTAMA: Gunakan 'include' untuk memuat data nasabah <<<<<<
       include: {

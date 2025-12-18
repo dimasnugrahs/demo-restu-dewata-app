@@ -203,6 +203,10 @@ export default function TransactionForm() {
         description: "",
         office_code: "",
       });
+
+      setDisplayIdentifier("");
+
+      setDisplayAmount("");
     } catch (error) {
       console.error("Gagal membuat transaksi:", error);
       const errorMessage =
