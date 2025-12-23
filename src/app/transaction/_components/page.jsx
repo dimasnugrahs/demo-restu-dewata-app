@@ -67,6 +67,9 @@ export default function TransactionForm() {
   const [isSearching, setIsSearching] = useState(false); // State loading untuk saran
   const formRef = useRef(null); // Ref untuk menutup suggestion saat klik di luar
 
+  // State untuk sweetalert
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+
   // Sinkronisasi displayAmount saat formData.amount di-reset (misal setelah submit sukses)
   useEffect(() => {
     // Jika formData.amount berubah (misalnya menjadi "" setelah reset), update tampilan
@@ -156,6 +159,8 @@ export default function TransactionForm() {
     const formattedDisplay = `${customer.id} - ${customer.full_name}`;
 
     setDisplayIdentifier(formattedDisplay);
+    setSelectedCustomer(customer);
+
     // Saat saran dipilih, kita mengisi input dengan ID nasabah yang sebenarnya.
     // Ini penting agar API transaksi (yang mencari ID nasabah) mendapatkan ID yang valid
     setFormData((prevData) => ({
@@ -187,12 +192,40 @@ export default function TransactionForm() {
     try {
       const response = await axios.post("/api/transactions", formData);
 
+      const noRek = selectedCustomer?.nasabah_id || "-";
+      const noRekAlternatif = selectedCustomer?.no_alternatif || "-";
+      const namaNasabah = selectedCustomer?.full_name || "-";
+      const nominal = displayAmount;
+
       Swal.fire({
         icon: "success",
         title: "Sukses!",
         text: response.data.message,
-        showConfirmButton: false,
-        timer: 1500,
+        html: `
+        <div class="text-left mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-sm">
+          <div class="flex justify-between py-1 border-b">
+            <span class="text-gray-600">No. Rekening:</span>
+            <span class="text-gray-800">${noRek}</span>
+          </div>
+          <div class="flex justify-between py-1 border-b">
+            <span class="text-gray-600">No. Rekening Alternatif:</span>
+            <span class="text-gray-800">${noRekAlternatif}</span>
+          </div>
+          <div class="flex justify-between py-1 border-b">
+            <span class="text-gray-600">Nama Nasabah:</span>
+            <span class="text-gray-800">${namaNasabah}</span>
+          </div>
+          <div class="flex justify-between py-1">
+            <span class="text-gray-600">Nominal:</span>
+            <span class="text-green-600 font-bold">Rp ${nominal}</span>
+          </div>
+        </div>
+      `,
+        timer: 10000, // 5000ms = 5 detik
+        timerProgressBar: true, // Menampilkan bar waktu yang berjalan di bawah
+        showConfirmButton: true,
+        confirmButtonText: "OK",
+        confirmButtonColor: "#4f46e5",
       });
 
       // Reset form setelah berhasil
@@ -205,7 +238,7 @@ export default function TransactionForm() {
       });
 
       setDisplayIdentifier("");
-
+      setSelectedCustomer(null);
       setDisplayAmount("");
     } catch (error) {
       console.error("Gagal membuat transaksi:", error);
