@@ -9,7 +9,7 @@ import { db } from "@/lib/db";
 export async function POST(req, res) {
   try {
     // Get data from body request
-    const { full_name, email, password_hash, role, username } =
+    const { full_name, email, password_hash, role, username, access_token } =
       await req.json();
 
     // Create new user
@@ -20,6 +20,7 @@ export async function POST(req, res) {
         username,
         email,
         role: role || "MARKETING",
+        access_token,
       },
     });
 

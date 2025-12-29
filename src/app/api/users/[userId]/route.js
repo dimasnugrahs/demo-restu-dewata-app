@@ -5,95 +5,91 @@ import { db } from "@/lib/db";
 
 export async function GET(request, { params }) {
   try {
-    //Get user by id
-    const user = await db.user.findFirst({
-      where: {
-        id: params.userId,
-      },
+    const { userId } = await params;
+
+    const user = await db.user.findUnique({
+      where: { id: userId },
     });
 
-    //Check if user is found
     if (!user) {
-      return new NextResponse("User Not Found", { status: 404 });
+      return NextResponse.json({ message: "User Not Found" }, { status: 404 });
     }
 
-    //Return user to client
     return NextResponse.json(user, { status: 200 });
   } catch (err) {
-    console.log(err);
-    return new NextResponse("Internal server error", {
-      status: err.status || 500,
-    });
+    console.error("GET ERROR:", err);
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
 export async function PATCH(req, { params }) {
   try {
-    //Get user by id
-    const user = await db.user.findFirst({
-      where: {
-        id: params.userId,
-      },
+    const { userId } = await params;
+    const body = await req.json();
+    const { full_name, role, email, username, access_token } = body;
+
+    // 1. Cek apakah user ada sebelum diupdate
+    const existingUser = await db.user.findUnique({
+      where: { id: userId },
     });
 
-    //Check if user is found
-    if (!user) {
-      return new NextResponse("User Not Found", { status: 404 });
+    if (!existingUser) {
+      return NextResponse.json({ message: "User Not Found" }, { status: 404 });
     }
 
-    //Get name user from body
-    const { full_name, role, email, username, access_token } = await req.json();
-
-    //Update nasabah
+    // 2. Lakukan Update
     const updateUser = await db.user.update({
-      where: {
-        id: params.userId,
-      },
+      where: { id: userId },
       data: {
-        full_name: full_name,
-        role: role,
-        email: email,
-        username: username,
-        access_token: access_token,
+        full_name,
+        role,
+        email,
+        username,
+        access_token,
       },
     });
 
-    //Return user to client
     return NextResponse.json(updateUser, { status: 200 });
   } catch (err) {
-    return new NextResponse("Internal server error", {
-      status: err.status || 500,
-    });
+    console.error("PATCH ERROR:", err); // Lihat log ini di terminal VS Code Anda
+    return NextResponse.json(
+      { message: err.message || "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
 // Delete user by id
 export async function DELETE(req, { params }) {
   try {
+    const { userId } = await params;
+
     //Get user by id
-    const user = await db.user.findFirst({
+    const user = await db.user.findUnique({
+      // findUnique lebih efisien untuk ID
       where: {
-        id: params.userId,
+        id: userId,
       },
     });
 
-    //Check if user is found
     if (!user) {
       return new NextResponse("User Not Found", { status: 404 });
     }
 
-    //Delete user
     await db.user.delete({
       where: {
-        id: params.userId,
+        id: userId,
       },
     });
 
-    //Return user to client
     return NextResponse.json({ message: "User deleted." }, { status: 200 });
   } catch (err) {
+    console.error(err);
     return new NextResponse("Internal server error", {
-      status: err.status || 500,
+      status: 500,
     });
   }
 }
