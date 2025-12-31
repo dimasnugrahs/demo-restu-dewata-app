@@ -16,6 +16,7 @@ export default function EditUserPage() {
     email: "",
     role: "MARKETING",
     access_token: "",
+    password: "",
   });
 
   const [loading, setLoading] = useState(true);
@@ -175,6 +176,23 @@ export default function EditUserPage() {
               required
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
             />
+          </div>
+
+          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+            <label className="block text-sm font-medium text-yellow-800">
+              Ganti Password (Opsional)
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Kosongkan jika tidak ingin mengganti password"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+            />
+            <p className="mt-1 text-xs text-yellow-700">
+              *Isi kolom ini jika user lupa password atau ingin menggantinya.
+            </p>
           </div>
 
           <div>

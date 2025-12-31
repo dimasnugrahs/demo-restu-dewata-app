@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { db } from "@/lib/db";
+import bcrypt from "bcrypt";
 
 export async function GET(request, { params }) {
   try {
@@ -29,7 +30,7 @@ export async function PATCH(req, { params }) {
   try {
     const { userId } = await params;
     const body = await req.json();
-    const { full_name, role, email, username, access_token } = body;
+    const { full_name, role, email, username, access_token, password } = body;
 
     // 1. Cek apakah user ada sebelum diupdate
     const existingUser = await db.user.findUnique({
@@ -40,16 +41,23 @@ export async function PATCH(req, { params }) {
       return NextResponse.json({ message: "User Not Found" }, { status: 404 });
     }
 
-    // 2. Lakukan Update
+    const updateData = {
+      full_name,
+      role,
+      email,
+      username,
+      access_token,
+    };
+
+    // LOGIKA PASSWORD: Jika password diisi, lakukan hashing
+    if (password && password.trim() !== "") {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password_hash = await bcrypt.hash(password, salt);
+    }
+
     const updateUser = await db.user.update({
       where: { id: userId },
-      data: {
-        full_name,
-        role,
-        email,
-        username,
-        access_token,
-      },
+      data: updateData,
     });
 
     return NextResponse.json(updateUser, { status: 200 });
