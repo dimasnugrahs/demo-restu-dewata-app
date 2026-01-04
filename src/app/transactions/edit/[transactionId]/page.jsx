@@ -266,12 +266,11 @@ export default function EditTransactionPage() {
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
             >
               <option value="">Silahkan pilih kode kantor...</option>
-              <option value="111">ROSA JUANITA</option>
-              <option value="116">NI LUH AYU RIKAYANTI</option>
-              <option value="139">NI LUH WAYAN MIRAH AYU PUSPASARI</option>
-              <option value="136">TELLER PUSAT (Pengganti)</option>
-              <option value="129">TELLER CABANG (Pengganti)</option>
-              <option value="138">TELLER KAS (Pengganti)</option>
+              {tellers.map((teller) => (
+                <option key={teller.id} value={teller.access_token}>
+                  {teller.access_token} - {teller.full_name.toUpperCase()}
+                </option>
+              ))}
             </select>
           </div>
 
