@@ -66,9 +66,45 @@ export default function TransactionForm() {
   const [suggestions, setSuggestions] = useState([]); // State untuk menampung saran
   const [isSearching, setIsSearching] = useState(false); // State loading untuk saran
   const formRef = useRef(null); // Ref untuk menutup suggestion saat klik di luar
+  const [tellers, setTellers] = useState([]);
 
   // State untuk sweetalert
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+  useEffect(() => {
+    const fetchTellers = async () => {
+      try {
+        const response = await axios.get("/api/users");
+        const allUsers = response.data.users || [];
+
+        // 1. Filter hanya yang rolenya TELLER
+        const tellerOnly = allUsers.filter((user) => user.role === "TELLER");
+
+        // 2. Sortir: Nama biasa di atas, Nama awalan "TELLER" di bawah
+        const sortedTellers = tellerOnly.sort((a, b) => {
+          const nameA = a.full_name.toUpperCase();
+          const nameB = b.full_name.toUpperCase();
+          const startsWithTellerA = nameA.startsWith("TELLER");
+          const startsWithTellerB = nameB.startsWith("TELLER");
+
+          // Jika A diawali "TELLER" dan B tidak, pindahkan A ke bawah (return 1)
+          if (startsWithTellerA && !startsWithTellerB) return 1;
+
+          // Jika B diawali "TELLER" dan A tidak, tetap (return -1)
+          if (!startsWithTellerA && startsWithTellerB) return -1;
+
+          // Jika keduanya sama-sama diawali "TELLER" atau keduanya nama biasa,
+          // urutkan secara abjad (A-Z)
+          return nameA.localeCompare(nameB);
+        });
+
+        setTellers(sortedTellers);
+      } catch (error) {
+        console.error("Gagal memuat data teller:", error);
+      }
+    };
+    fetchTellers();
+  }, []);
 
   // Sinkronisasi displayAmount saat formData.amount di-reset (misal setelah submit sukses)
   useEffect(() => {
@@ -417,13 +453,24 @@ export default function TransactionForm() {
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
-          <option value="">Silahkan pilih kode kantor...</option>
+          {/* <option value="">Silahkan pilih kode kantor...</option>
           <option value="111">ROSA JUANITA</option>
           <option value="116">NI LUH AYU RIKAYANTI</option>
           <option value="139">NI LUH WAYAN MIRAH AYU PUSPASARI</option>
           <option value="136">TELLER PUSAT (Pengganti)</option>
           <option value="129">TELLER CABANG (Pengganti)</option>
-          <option value="138">TELLER KAS (Pengganti)</option>
+          <option value="138">TELLER KAS (Pengganti)</option> */}
+
+          <option value="">Silahkan pilih kode kantor...</option>
+          {tellers.length > 0 ? (
+            tellers.map((teller) => (
+              <option key={teller.id} value={teller.access_token}>
+                {teller.access_token} - {teller.full_name.toUpperCase()}
+              </option>
+            ))
+          ) : (
+            <option disabled>Memuat data teller...</option>
+          )}
         </select>
       </div>
 

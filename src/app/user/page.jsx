@@ -400,6 +400,57 @@ export default function UserPage() {
                 </tbody>
               </table>
             )}
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
+                <p className="text-sm text-gray-700">
+                  Menampilkan{" "}
+                  <span className="font-semibold">{currentUsers.length}</span>{" "}
+                  dari{" "}
+                  <span className="font-semibold">{filteredUsers.length}</span>{" "}
+                  user
+                </p>
+
+                <nav className="inline-flex -space-x-px rounded-md shadow-sm bg-white">
+                  {/* Tombol Previous */}
+                  <button
+                    onClick={() => paginate(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-3 py-2 border border-gray-300 rounded-l-md text-sm font-medium hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    Prev
+                  </button>
+
+                  {/* Nomor Halaman */}
+                  {pageNumbers.map((number, index) => (
+                    <button
+                      key={index}
+                      onClick={() =>
+                        typeof number === "number" && paginate(number)
+                      }
+                      disabled={number === "..."}
+                      className={`px-4 py-2 border text-sm font-medium ${
+                        currentPage === number
+                          ? "bg-company-800 text-white border-company-800 z-10"
+                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                      } ${
+                        number === "..." ? "cursor-default" : "cursor-pointer"
+                      }`}
+                    >
+                      {number}
+                    </button>
+                  ))}
+
+                  {/* Tombol Next */}
+                  <button
+                    onClick={() => paginate(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-2 border border-gray-300 rounded-r-md text-sm font-medium hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </nav>
+              </div>
+            )}
           </div>
         </DashboardLayout>
       </div>

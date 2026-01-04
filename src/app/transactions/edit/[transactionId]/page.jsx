@@ -16,6 +16,8 @@ export default function EditTransactionPage() {
 
   const [customerName, setCustomerName] = useState("");
 
+  const [tellers, setTellers] = useState([]);
+
   // --- EFFECT 1: MEMUAT DATA TRANSACTION LAMA ---
   useEffect(() => {
     if (!transactionId) return;
@@ -48,6 +50,42 @@ export default function EditTransactionPage() {
 
     fetchTransaction();
   }, [transactionId]);
+
+  // --- EFFECT 2: MEMUAT DATA USERS (TELLER) ---
+  useEffect(() => {
+    const fetchTellers = async () => {
+      try {
+        const response = await fetch("/api/users");
+        if (response.ok) {
+          const data = await response.json();
+          const allUsers = data.users || [];
+
+          // 1. Filter hanya role TELLER
+          const filteredTellers = allUsers.filter(
+            (user) => user.role === "TELLER"
+          );
+
+          // 2. Sortir: Nama orang di atas, Nama awalan "TELLER" di bawah
+          const sortedTellers = filteredTellers.sort((a, b) => {
+            const nameA = a.full_name.toUpperCase();
+            const nameB = b.full_name.toUpperCase();
+            const startsWithTellerA = nameA.startsWith("TELLER");
+            const startsWithTellerB = nameB.startsWith("TELLER");
+
+            if (startsWithTellerA && !startsWithTellerB) return 1;
+            if (!startsWithTellerA && startsWithTellerB) return -1;
+            return nameA.localeCompare(nameB);
+          });
+
+          setTellers(sortedTellers);
+        }
+      } catch (err) {
+        console.error("Error fetching tellers:", err);
+      }
+    };
+
+    fetchTellers();
+  }, []);
 
   // Handle perubahan pada input formulir
   const handleChange = (e) => {

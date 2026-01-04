@@ -18,6 +18,7 @@ enum UserRole {
   SUPERADMIN
   ADMIN
   MARKETING
+  TELLER
 }
 
 model User {
